@@ -132,3 +132,12 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 
 ## Lessons Learned
 
+### 2026-07-13 — FieldNotes scaffold + VPS deploy
+
+- **Static SPA on existing Caddy stack**: When adding a new static site to a VPS already running Docker + Caddy, you need to (1) add a bind mount in `docker-compose.yml` for the new directory, (2) add a Caddyfile block, and (3) restart the Caddy container. The Caddyfile path inside the container (`/var/www/...`) must match the mount target, not the host path.
+- **`tsc -b` vs `vite build`**: Vite handles TypeScript compilation via esbuild internally. Using `tsc -b` before `vite build` requires special tsconfig settings. Simpler to just run `vite build` for the build step and keep `tsc --noEmit` as a separate `typecheck` script.
+- **Vite client types for `import.meta.env`**: Always include a `src/vite-env.d.ts` file with `/// <reference types="vite/client" />` to avoid TS errors on `import.meta.env`.
+- **Strict TS catches unused imports**: `noUnusedLocals` and `noUnusedParameters` will catch unused destructured props from function signatures. Prefix with underscore (`_unused`) to suppress.
+- **`.gitignore` must exclude generated `.js` files**: Running `tsc` without `--noEmit` in the same directory as `.tsx` files will emit `.js` files. Always add `src/**/*.js` and `src/**/*.js.map` to `.gitignore`.
+- **Supabase project sharing**: Using the same Supabase project for multiple apps works fine as long as table names are prefixed (`workout_*` vs phtracker's implicit naming). Auth is shared across apps.
+

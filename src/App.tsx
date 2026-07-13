@@ -25,6 +25,7 @@ import {
   type Goal,
   type Note,
   type Program,
+  type Unit,
   type WorkoutState,
   seedState,
   uid,
@@ -325,7 +326,7 @@ function TodayView({
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-bone">{ex.name}</div>
                     <div className="text-xs text-bone-dim mt-0.5">
-                      {ex.muscle} &middot; {pe.sets} sets &times; {pe.reps}
+                      {ex.muscle} &middot; {pe.sets} sets &times; {pe.reps} {ex.unit}
                       {ex.note && <span> &middot; {ex.note}</span>}
                     </div>
                   </div>
@@ -636,7 +637,7 @@ function ProgramsView({
                         const ex = state.exercises.find((e) => e.id === pe.exId);
                         return ex ? (
                           <div key={j}>
-                            {ex.name} &mdash; {pe.sets}&times;{pe.reps}
+                            {ex.name} &mdash; {pe.sets}&times;{pe.reps} {ex.unit}
                           </div>
                         ) : null;
                       })
@@ -857,7 +858,7 @@ function LibraryView({
                 </span>
               </div>
               <div className="text-xs text-bone-dim mt-0.5">
-                {ex.muscle} &middot; default {ex.sets}&times;{ex.reps}
+                {ex.muscle} &middot; default {ex.sets}&times;{ex.reps} {ex.unit}
                 {ex.note && <span> &middot; {ex.note}</span>}
               </div>
             </div>
@@ -891,6 +892,7 @@ function NewExerciseForm({ onSave }: { onSave: (ex: Exercise) => void }) {
   const [muscle, setMuscle] = useState("");
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(12);
+  const [unit, setUnit] = useState<Unit>("reps");
   const [note, setNote] = useState("");
   return (
     <>
@@ -955,6 +957,22 @@ function NewExerciseForm({ onSave }: { onSave: (ex: Exercise) => void }) {
             className="w-full bg-bg border border-line text-bone px-2.5 py-2 rounded-md text-sm"
           />
         </div>
+        <div>
+          <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">
+            Unit
+          </label>
+          <select
+            value={unit}
+            onChange={(e) => setUnit(e.target.value as Unit)}
+            className="w-full bg-bg border border-line text-bone px-2.5 py-2 rounded-md text-sm"
+          >
+            <option value="reps">Reps</option>
+            <option value="sec">Seconds</option>
+            <option value="m">Meters</option>
+            <option value="steps">Steps</option>
+            <option value="min">Minutes</option>
+          </select>
+        </div>
       </div>
       <div className="mb-4">
         <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">
@@ -976,6 +994,7 @@ function NewExerciseForm({ onSave }: { onSave: (ex: Exercise) => void }) {
             muscle: muscle.trim() || "General",
             sets,
             reps,
+            unit,
             note: note.trim() || undefined,
           });
         }}

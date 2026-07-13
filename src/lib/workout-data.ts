@@ -1,3 +1,5 @@
+export type Unit = "reps" | "sec" | "m" | "steps" | "min";
+
 export interface Exercise {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface Exercise {
   sets: number;
   reps: number;
   note?: string;
+  unit?: Unit;
 }
 
 export interface ProgramExercise {
@@ -84,6 +87,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 15,
+      unit: "reps",
       note: "Feet shoulder-width, toes slightly out, chest up. Add dumbbells once easy.",
     },
     {
@@ -93,6 +97,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Glutes",
       sets: 3,
       reps: 15,
+      unit: "reps",
       note: "Feet hip-width, drive through heels, squeeze glutes at top.",
     },
     {
@@ -102,6 +107,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Per leg. Shoulder-width stance, front knee at 90 degrees. Bodyweight first.",
     },
     {
@@ -111,6 +117,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Calves",
       sets: 3,
       reps: 20,
+      unit: "reps",
       note: "Feet hip-width, rise slowly on toes, lower controlled.",
     },
     {
@@ -120,6 +127,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 25,
+      unit: "sec",
       note: "Seconds. Back flat on wall, thighs parallel to floor.",
     },
     {
@@ -129,6 +137,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Chest",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Hands shoulder-width, body in straight line. Elevate hands on bench/couch.",
     },
     {
@@ -138,6 +147,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Back",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Per arm. Hinge at hip, back flat, pull dumbbell to hip. Start 3-4kg.",
     },
     {
@@ -147,6 +157,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Shoulders",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Feet hip-width, palms forward, press overhead. Start 2-3kg.",
     },
     {
@@ -156,6 +167,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Back",
       sets: 3,
       reps: 15,
+      unit: "reps",
       note: "Arms straight in front, pull band apart across chest, squeeze shoulder blades.",
     },
     {
@@ -165,6 +177,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Arms",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Feet hip-width, elbows pinned to ribs. Start 2-3kg.",
     },
     {
@@ -174,6 +187,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 1,
       reps: 1,
+      unit: "min",
       note: "20-25 min. Moderate pace, maintain upright posture.",
     },
     {
@@ -183,6 +197,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 25,
+      unit: "sec",
       note: "Seconds. Forearms on floor, body in straight line, core braced.",
     },
     {
@@ -192,6 +207,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Per side. Lower back flat on floor, extend opposite arm and leg.",
     },
     {
@@ -201,6 +217,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Per side. Tabletop position, extend opposite arm and leg simultaneously.",
     },
     {
@@ -210,6 +227,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Feet shoulder-width, hold weight at chest, elbows between knees at bottom. Start 4-6kg.",
     },
     {
@@ -219,6 +237,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Hip-width stance, soft knees, hinge at hips. Light weight, focus hip hinge.",
     },
     {
@@ -228,6 +247,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 2,
       reps: 18,
+      unit: "sec",
       note: "Seconds, per side. Stack feet, lift hips, top hand on hip or overhead.",
     },
     {
@@ -237,6 +257,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 8,
       reps: 30,
+      unit: "sec",
       note: "30s work / 30s rest. Rotate through jumping jacks, high knees, squat jumps, mountain climbers.",
     },
     {
@@ -246,6 +267,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Glutes",
       sets: 4,
       reps: 15,
+      unit: "reps",
       note: "Feet wider than hip-width, hinge at hips, swing kettlebell to chest height.",
     },
     {
@@ -255,6 +277,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Per leg. Foot fully on box, drive through heel, stand tall at top.",
     },
     {
@@ -264,6 +287,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Glutes",
       sets: 4,
       reps: 15,
+      unit: "reps",
       note: "Shoulders on bench, feet hip-width, drive hips up, squeeze glutes at top.",
     },
     {
@@ -273,6 +297,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Glutes",
       sets: 3,
       reps: 20,
+      unit: "steps",
       note: "Steps. Band above knees, half-squat position, step sideways maintaining tension.",
     },
     {
@@ -282,6 +307,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Chest",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Hands slightly wider than shoulder-width, body in straight line, lower chest to floor.",
     },
     {
@@ -291,6 +317,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Triceps",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Hands together under chest forming diamond shape, elbows track close to body.",
     },
     {
@@ -300,6 +327,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Chest",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Feet elevated on bench/couch, hands shoulder-width, body in straight line.",
     },
     {
@@ -309,6 +337,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Hamstrings",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Hip-width stance, soft knees, hinge at hips, slight bend in knees throughout.",
     },
     {
@@ -318,6 +347,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Per leg. Rear foot elevated on bench, front knee at 90 degrees, torso upright.",
     },
     {
@@ -327,6 +357,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Per leg. Step back into lunge, both knees at 90 degrees, keep torso upright.",
     },
     {
@@ -336,6 +367,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Hamstrings",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Lying on back, heels on towel, lift hips, slide heels toward glutes.",
     },
     {
@@ -345,6 +377,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Triceps",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Hands on bench behind, fingers forward, lower body with elbows tracking back.",
     },
     {
@@ -354,6 +387,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Arms",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Neutral grip (palms facing each other), per arm. Start 2-3kg.",
     },
     {
@@ -363,6 +397,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Shoulders",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Light weight, slight forward lean, raise dumbbells to shoulder height, control descent.",
     },
     {
@@ -372,6 +407,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Shoulders",
       sets: 3,
       reps: 15,
+      unit: "reps",
       note: "Band or cable at face height, pull toward face, squeeze shoulder blades, rotate hands.",
     },
     {
@@ -381,6 +417,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 20,
+      unit: "sec",
       note: "Seconds. Lying on back, press lower back into floor, lift shoulders and legs off floor.",
     },
     {
@@ -390,6 +427,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 12,
+      unit: "reps",
       note: "Lying on back, legs straight, raise to 90 degrees then lower slowly without arching back.",
     },
     {
@@ -399,6 +437,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Core",
       sets: 3,
       reps: 14,
+      unit: "reps",
       note: "Per side. Seated, lean back slightly, rotate torso side to side with or without weight.",
     },
     {
@@ -408,6 +447,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Back",
       sets: 3,
       reps: 8,
+      unit: "reps",
       note: "Overhand grip, shoulder-width apart, pull chin to bar or bar to upper chest.",
     },
     {
@@ -417,6 +457,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 3,
       reps: 30,
+      unit: "sec",
       note: "Seconds. Land softly on balls of feet, arms sweep overhead in rhythm.",
     },
     {
@@ -426,6 +467,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 3,
       reps: 30,
+      unit: "sec",
       note: "Seconds. Plank position, drive knees to chest alternately, keep hips level.",
     },
     {
@@ -435,6 +477,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 3,
       reps: 10,
+      unit: "reps",
       note: "Squat down, kick feet back to plank, do a push-up, jump feet forward, explode up.",
     },
     {
@@ -444,6 +487,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 3,
       reps: 30,
+      unit: "sec",
       note: "Seconds. Drive knees up to waist height, pump arms, land softly.",
     },
     {
@@ -453,6 +497,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 3,
       reps: 60,
+      unit: "sec",
       note: "Seconds. Light bounce on balls of feet, wrists rotate rope, keep elbows close.",
     },
     {
@@ -462,6 +507,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 3,
       reps: 500,
+      unit: "m",
       note: "Meters. Legs drive first, then pull arms, reverse order on recovery.",
     },
     {
@@ -471,6 +517,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Legs",
       sets: 8,
       reps: 30,
+      unit: "sec",
       note: "Seconds. Max effort sprint, 30s active recovery between.",
     },
     {
@@ -480,6 +527,7 @@ export function seedExercises(): Exercise[] {
       muscle: "Full Body",
       sets: 1,
       reps: 1,
+      unit: "min",
       note: "15-20 min. See Yoga tab.",
     },
   ];

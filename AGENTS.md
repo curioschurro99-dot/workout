@@ -132,6 +132,13 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 
 ## Lessons Learned
 
+### 2026-07-13 — Add 6 workout programs
+
+- **Single-file program data is easy to extend**: Adding new programs to `seedPrograms()` requires zero changes to UI, routing, or data structures. The ProgramDay/ProgramExercise model is flexible enough to add any number of programs.
+- **Prettier may drift on existing code after large edits**: Running `npm run format` after editing a file may also reformat other files with pre-existing whitespace issues. Run format early to separate formatting changes from logic changes.
+- **Rest days in programs**: Explicit rest/active recovery/mobility days make programs clearer for users — no ambiguity about what to do on Day 7. Yoga flow on the last day ties programs into the existing Yoga tab.
+- **PowerShell doesn't support `&&`**: Use `; if ($?) { ... }` for sequential commands instead. This is a Windows-specific gotcha.
+
 ### 2026-07-13 — FieldNotes scaffold + VPS deploy
 
 - **Static SPA on existing Caddy stack**: When adding a new static site to a VPS already running Docker + Caddy, you need to (1) add a bind mount in `docker-compose.yml` for the new directory, (2) add a Caddyfile block, and (3) restart the Caddy container. The Caddyfile path inside the container (`/var/www/...`) must match the mount target, not the host path.

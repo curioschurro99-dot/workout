@@ -132,6 +132,12 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 
 ## Lessons Learned
 
+### 2026-07-13 — Yoga shape fixes + session wrap
+
+- **Cross-reference shape keys**: After adding new poses or editing existing ones, diff all unique `shape:` values used in POSES against SHAPES dict keys. Missing keys render blank SVGs. Some shapes had mismatches (`bow` vs `bowPose`) or were completely absent (`camel`, `fixedFirm`, `headToKnee`, `rabbit`, `sideAngle`, `sitUp`, `spineTwist`).
+- **`vite build` succeeds despite TS errors**: Vite uses esbuild internally which doesn't enforce strict TypeScript. Always run `npx tsc --noEmit` (via `npm run typecheck`) to catch real type errors. The build is not a substitute for type checking.
+- **Document before break**: Always push a commit with docs/changelog updates before taking a break so the next session has a clear starting point.
+
 ### 2026-07-13 — Yoga Vinyasa flow + dual-flow YogaView
 
 - **Design `id` fields early**: Adding `id` to Pose after 52 entries exist is tedious (~24 edit rounds). Adding it at the type definition stage would have been one edit.

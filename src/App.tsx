@@ -24,6 +24,7 @@ import {
   type Exercise,
   type Goal,
   type Note,
+  type Pose,
   type Program,
   type Unit,
   type WorkoutState,
@@ -31,6 +32,7 @@ import {
   uid,
   SHAPES,
   POSES,
+  YOGA_FLOWS,
 } from "./lib/workout-data";
 import {
   type FoodItem,
@@ -1352,9 +1354,13 @@ function YogaView({
   const [seqRunning, setSeqRunning] = useState(false);
   const [voiceCoach, setVoiceCoach] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+  const [flowId, setFlowId] = useState<keyof typeof YOGA_FLOWS>("hot26");
   const seqIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const sequence = POSES.filter((p) => p.seq).sort((a, b) => (a.seq || 0) - (b.seq || 0));
+  const flow = YOGA_FLOWS[flowId];
+  const sequence = flow.poseIds
+    .map((id) => POSES.find((p) => p.id === id))
+    .filter((p): p is Pose => p !== undefined);
 
   const cats = [
     "all",
@@ -1554,8 +1560,7 @@ function YogaView({
           <div className="text-center">
             <div className="font-['Oswald'] text-2xl text-brass mb-2">Flow Complete</div>
             <p className="text-sm text-bone-dim">
-              Nice work &mdash; that's the full 26-posture flow. Rest in Savasana as long as you
-              like.
+              Nice work &mdash; that's the full {flow.name}. Rest in Savasana as long as you like.
             </p>
             <button
               onClick={() => setInSequence(false)}
@@ -1575,20 +1580,34 @@ function YogaView({
         <div>
           <h1 className="text-[30px] font-['Oswald'] uppercase tracking-wider text-bone">Yoga</h1>
           <div className="text-sm text-bone-dim mt-1.5 max-w-[520px]">
-            50 poses across standing, backbend, forward fold, twist, balance, hip-opener, core and
-            restorative.
+            52+ poses across standing, backbend, forward fold, twist, balance, hip-opener, core and
+            restorative. Choose a guided flow or browse the library.
           </div>
         </div>
-        <button
-          onClick={() => {
-            setInSequence(true);
-            setSeqIndex(0);
-            setSeqRemaining(sequence[0]?.hold || 30);
-          }}
-          className="bg-brass text-[#1a1408] border-none px-4 py-2.5 rounded-md font-semibold text-xs uppercase tracking-[0.03em] hover:bg-[#d69a4e]"
-        >
-          <Play className="w-4 h-4 inline mr-1" /> Start Guided Hot Yoga Flow
-        </button>
+        <div className="flex gap-2 flex-wrap">
+          {(Object.keys(YOGA_FLOWS) as Array<keyof typeof YOGA_FLOWS>).map((fid) => (
+            <button
+              key={fid}
+              onClick={() => {
+                setFlowId(fid);
+                setInSequence(true);
+                setSeqIndex(0);
+                const seq = YOGA_FLOWS[fid].poseIds
+                  .map((pid) => POSES.find((p) => p.id === pid))
+                  .filter((p): p is Pose => p !== undefined);
+                setSeqRemaining(seq[0]?.hold || 30);
+              }}
+              className={`px-3.5 py-2 rounded-md font-semibold text-xs uppercase tracking-[0.03em] border-none ${
+                flowId === fid
+                  ? "bg-brass text-[#1a1408]"
+                  : "bg-transparent text-bone border border-line hover:border-brass hover:text-brass"
+              }`}
+            >
+              <Play className="w-4 h-4 inline mr-1" />{" "}
+              {fid === "hot26" ? "Start Hot Yoga (26 Postures)" : "Start Vinyasa Flow"}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex gap-2 mb-4 flex-wrap">

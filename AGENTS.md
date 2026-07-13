@@ -132,6 +132,14 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 
 ## Lessons Learned
 
+### 2026-07-13 — Yoga Vinyasa flow + dual-flow YogaView
+
+- **Design `id` fields early**: Adding `id` to Pose after 52 entries exist is tedious (~24 edit rounds). Adding it at the type definition stage would have been one edit.
+- **`seq` should be optional with null**: Not all poses belong to a fixed sequence. Making `seq?: number | null` avoids ~20 type errors when some poses lack the field entirely.
+- **Alternate pose versions exist**: The POSES array had duplicate entries for the same pose name (e.g. Fish Pose, Butterfly) with different cue text and hold times. Use `-alt` suffix for alternate ids.
+- **`YOGA_FLOWS` by id array is clean**: Defining flows as arrays of pose IDs keeps the design flexible — any pose can appear in any flow, multiple times, without modifying the pose data itself.
+- **Type predicate for filter**: `poses.filter((p): p is Pose => p !== undefined)` is needed in strict TS when mapping IDs to objects that might not exist.
+
 ### 2026-07-13 — Add 6 workout programs
 
 - **Single-file program data is easy to extend**: Adding new programs to `seedPrograms()` requires zero changes to UI, routing, or data structures. The ProgramDay/ProgramExercise model is flexible enough to add any number of programs.

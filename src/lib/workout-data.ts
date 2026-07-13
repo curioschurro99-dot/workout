@@ -1082,6 +1082,14 @@ export const SHAPES: Record<string, string> = {
   reverseWarrior: `<path d="M45 18 L30 80 M45 18 L62 50 M45 26 L62 15 M45 50 L74 70" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
   shoulderStand: `<path d="M35 55 L58 55 M58 55 L62 42 M58 55 L65 66 M55 30 L55 15 M62 28 L62 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="59" cy="8" r="6" fill="currentColor"/>`,
   plowPose: `<path d="M35 55 L58 55 M58 55 L62 42 M58 55 L65 66 M55 30 L40 15 M62 28 L45 12 M40 15 L45 18 M45 12 L50 18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="47" cy="8" r="6" fill="currentColor"/>`,
+  bow: `<path d="M30 60 Q45 30 65 45 Q60 65 40 70 Q28 72 30 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="34" cy="55" r="6" fill="currentColor"/>`,
+  camel: `<path d="M45 30 Q55 55 42 75 M45 75 L38 85 M45 75 L52 85 M45 35 L62 40" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  fixedFirm: `<path d="M45 30 Q55 55 42 75 M45 75 L38 85 M45 75 L52 85 M45 35 L62 40" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  rabbit: `<path d="M45 40 Q30 55 45 78 M45 40 L45 25 M45 78 L38 85 M45 78 L52 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="18" r="6" fill="currentColor"/>`,
+  headToKnee: `<path d="M20 75 L55 75 M20 75 Q40 55 55 30 M55 75 L60 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="58" cy="26" r="6" fill="currentColor"/>`,
+  spineTwist: `<path d="M45 30 L45 60 M45 60 L28 78 M45 60 L58 74 M45 36 L64 24 M45 36 L30 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  sideAngle: `<path d="M45 18 L28 70 M45 18 L62 50 M45 26 L20 30 M28 70 L62 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
+  sitUp: `<path d="M20 72 L45 35 L70 72 M45 35 L30 18 M45 35 L60 18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
 };
 
 export const POSES: Pose[] = [

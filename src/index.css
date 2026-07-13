@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #171d18;
+  --color-surface: #212a22;
+  --color-surface-2: #28332a;
+  --color-line: #3a463b;
+  --color-bone: #ece7da;
+  --color-bone-dim: #a8ada1;
+  --color-brass: #c68a3e;
+  --color-brass-dim: #8f6530;
+  --color-moss: #7ea366;
+  --color-moss-dim: #4c6640;
+  --color-danger: #c15c4a;
+}

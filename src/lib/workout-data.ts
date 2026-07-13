@@ -1,0 +1,257 @@
+export interface Exercise {
+  id: string;
+  name: string;
+  cat: "strength" | "cardio" | "mobility";
+  muscle: string;
+  sets: number;
+  reps: number;
+  note?: string;
+}
+
+export interface ProgramExercise {
+  exId: string;
+  sets: number;
+  reps: number;
+}
+
+export interface ProgramDay {
+  label: string;
+  focus: string;
+  exercises: ProgramExercise[];
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  desc: string;
+  days: ProgramDay[];
+}
+
+export interface SessionLog {
+  date: string;
+  programId: string;
+  dayLabel: string;
+  focus: string;
+  exCount: number;
+}
+
+export interface Goal {
+  targetWeight: string;
+  weeklyTarget: number;
+  notes: string;
+  startDate: string;
+}
+
+export interface Note {
+  title: string;
+  body: string;
+}
+
+export interface Pose {
+  name: string;
+  sanskrit: string;
+  category: string;
+  focus: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  hold: number;
+  shape: string;
+  seq: number | null;
+  cue: string;
+}
+
+export interface WorkoutState {
+  exercises: Exercise[];
+  programs: Program[];
+  activeProgramId: string | null;
+  activeDayIndex: number;
+  logs: SessionLog[];
+  goal: Goal;
+  myNotes: Note[];
+  checks: Record<string, Record<number, boolean>>;
+  videoUrl: string;
+}
+
+export function uid(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+export function seedExercises(): Exercise[] {
+  return [
+    { id: "bw-squat", name: "Bodyweight Squat", cat: "strength", muscle: "Legs", sets: 3, reps: 15, note: "Add dumbbells once easy." },
+    { id: "glute-bridge", name: "Glute Bridge", cat: "strength", muscle: "Glutes", sets: 3, reps: 15 },
+    { id: "walk-lunge", name: "Walking Lunge", cat: "strength", muscle: "Legs", sets: 3, reps: 10, note: "Per leg. Bodyweight first." },
+    { id: "calf-raise", name: "Standing Calf Raise", cat: "strength", muscle: "Calves", sets: 3, reps: 20 },
+    { id: "wall-sit", name: "Wall Sit", cat: "strength", muscle: "Legs", sets: 3, reps: 25, note: "Seconds, not reps." },
+    { id: "incline-pushup", name: "Incline Push-Up", cat: "strength", muscle: "Chest", sets: 3, reps: 10, note: "Hands elevated on bench/couch." },
+    { id: "db-row", name: "Dumbbell Row", cat: "strength", muscle: "Back", sets: 3, reps: 12, note: "Per arm. Start 3-4kg." },
+    { id: "db-shoulder-press", name: "Dumbbell Shoulder Press", cat: "strength", muscle: "Shoulders", sets: 3, reps: 10, note: "Start light, 2-3kg." },
+    { id: "band-pullapart", name: "Band Pull-Apart", cat: "strength", muscle: "Back", sets: 3, reps: 15 },
+    { id: "bicep-curl", name: "Bicep Curl", cat: "strength", muscle: "Arms", sets: 3, reps: 12, note: "Start 2-3kg." },
+    { id: "walk", name: "Brisk Walk / Easy Cycle", cat: "cardio", muscle: "Full Body", sets: 1, reps: 1, note: "20-25 min." },
+    { id: "plank", name: "Plank", cat: "strength", muscle: "Core", sets: 3, reps: 25, note: "Seconds. Build up over weeks." },
+    { id: "dead-bug", name: "Dead Bug", cat: "strength", muscle: "Core", sets: 3, reps: 10, note: "Per side." },
+    { id: "bird-dog", name: "Bird Dog", cat: "strength", muscle: "Core", sets: 3, reps: 10, note: "Per side." },
+    { id: "goblet-squat", name: "Goblet Squat", cat: "strength", muscle: "Legs", sets: 3, reps: 12, note: "Start 4-6kg." },
+    { id: "db-deadlift", name: "Dumbbell Deadlift", cat: "strength", muscle: "Legs", sets: 3, reps: 10, note: "Light weight, focus hip hinge." },
+    { id: "side-plank", name: "Side Plank", cat: "strength", muscle: "Core", sets: 2, reps: 18, note: "Seconds, per side." },
+    { id: "hiit-circuit", name: "Bodyweight HIIT Circuit", cat: "cardio", muscle: "Full Body", sets: 8, reps: 30, note: "30s work / 30s rest. Jumping jacks, high knees, squats, mountain climbers." },
+    { id: "kb-swing", name: "Kettlebell Swing", cat: "strength", muscle: "Glutes", sets: 4, reps: 15 },
+    { id: "box-stepup", name: "Box Step-Up", cat: "strength", muscle: "Legs", sets: 3, reps: 12, note: "Per leg." },
+    { id: "hip-thrust", name: "Hip Thrust", cat: "strength", muscle: "Glutes", sets: 4, reps: 15 },
+    { id: "lateral-band-walk", name: "Lateral Band Walk", cat: "strength", muscle: "Glutes", sets: 3, reps: 20, note: "Steps." },
+    { id: "yoga-flow", name: "Gentle Yoga Flow", cat: "mobility", muscle: "Full Body", sets: 1, reps: 1, note: "15-20 min. See Yoga tab." },
+  ];
+}
+
+export function seedProgram(): Program {
+  return {
+    id: "magnus-recomp",
+    name: "Magnus Method — 7 Day Recomposition",
+    desc: "Beginner-friendly strength-first split with light cardio, built to lose fat and build muscle at the same time.",
+    days: [
+      { label: "Day 1", focus: "Lower Body Strength", exercises: [
+        { exId: "bw-squat", sets: 3, reps: 15 }, { exId: "glute-bridge", sets: 3, reps: 15 },
+        { exId: "walk-lunge", sets: 3, reps: 10 }, { exId: "calf-raise", sets: 3, reps: 20 },
+        { exId: "wall-sit", sets: 3, reps: 25 },
+      ]},
+      { label: "Day 2", focus: "Upper Body Strength", exercises: [
+        { exId: "incline-pushup", sets: 3, reps: 10 }, { exId: "db-row", sets: 3, reps: 12 },
+        { exId: "db-shoulder-press", sets: 3, reps: 10 }, { exId: "band-pullapart", sets: 3, reps: 15 },
+        { exId: "bicep-curl", sets: 3, reps: 12 },
+      ]},
+      { label: "Day 3", focus: "Light Cardio + Core", exercises: [
+        { exId: "walk", sets: 1, reps: 1 }, { exId: "plank", sets: 3, reps: 25 },
+        { exId: "dead-bug", sets: 3, reps: 10 }, { exId: "bird-dog", sets: 3, reps: 10 },
+      ]},
+      { label: "Day 4", focus: "Rest", exercises: [] },
+      { label: "Day 5", focus: "Full Body Strength", exercises: [
+        { exId: "goblet-squat", sets: 3, reps: 12 }, { exId: "db-deadlift", sets: 3, reps: 10 },
+        { exId: "incline-pushup", sets: 3, reps: 10 }, { exId: "db-row", sets: 3, reps: 15 },
+        { exId: "side-plank", sets: 2, reps: 18 },
+      ]},
+      { label: "Day 6", focus: "Short HIIT (15-20min)", exercises: [
+        { exId: "hiit-circuit", sets: 8, reps: 30 },
+      ]},
+      { label: "Day 7", focus: "Rest / Mobility", exercises: [
+        { exId: "yoga-flow", sets: 1, reps: 1 },
+      ]},
+    ],
+  };
+}
+
+export function seedState(): WorkoutState {
+  return {
+    exercises: seedExercises(),
+    programs: [seedProgram()],
+    activeProgramId: "magnus-recomp",
+    activeDayIndex: 0,
+    logs: [],
+    goal: { targetWeight: "", weeklyTarget: 5, notes: "", startDate: new Date().toISOString().slice(0, 10) },
+    myNotes: [],
+    checks: {},
+    videoUrl: "",
+  };
+}
+
+export const SHAPES: Record<string, string> = {
+  standing: `<path d="M45 15 L45 65 M45 28 L28 45 M45 28 L62 45 M45 65 L30 85 M45 65 L60 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="10" r="6" fill="currentColor"/>`,
+  armsUp: `<path d="M45 22 L45 65 M45 28 L28 12 M45 28 L62 12 M45 65 L30 85 M45 65 L60 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="16" r="6" fill="currentColor"/>`,
+  backArch: `<path d="M45 20 Q55 45 42 70 M45 26 L28 14 M45 26 L60 30 M42 70 L28 85 M42 70 L54 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="14" r="6" fill="currentColor"/>`,
+  chair: `<path d="M45 20 L45 48 M45 48 L30 80 M45 48 L58 78 M45 25 L62 32" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="currentColor"/>`,
+  eagle: `<path d="M45 20 L45 55 M45 30 Q52 35 45 42 Q38 48 45 52 M45 55 Q52 65 45 75 Q38 82 46 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="currentColor"/>`,
+  standKneeUp: `<path d="M45 18 L45 55 M45 55 L30 85 M45 35 L62 25 M45 55 Q52 45 48 32" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
+  standingBow: `<path d="M45 22 Q52 42 40 60 M45 28 L62 15 M40 60 L52 82 M40 60 Q30 45 22 30" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="16" r="6" fill="currentColor"/>`,
+  balanceStick: `<path d="M20 40 L70 40 M20 40 L12 55 M70 40 L82 30" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="16" cy="44" r="6" fill="currentColor"/>`,
+  straddleFold: `<path d="M45 25 L45 45 M45 45 L25 78 M45 45 L65 78 M45 30 L45 65" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="66" r="6" fill="currentColor"/>`,
+  triangle: `<path d="M45 18 L30 80 M45 18 L62 55 M45 18 L20 26" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
+  tree: `<path d="M45 18 L45 70 M45 70 L28 82 M45 42 L30 42 M45 20 L30 8 M45 20 L60 8" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="currentColor"/>`,
+  toeStand: `<path d="M45 30 L45 55 M45 55 L38 78 M45 40 L60 35 M45 40 L30 48" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  seatedFold: `<path d="M20 75 L55 75 M20 75 Q40 55 55 30 M55 75 L60 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="58" cy="26" r="6" fill="currentColor"/>`,
+  windRemoving: `<path d="M25 55 Q45 40 55 55 M25 55 L15 62 M55 55 L65 62" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="50" r="6" fill="currentColor"/>`,
+  cobra: `<path d="M15 68 Q45 35 78 62 M40 68 L36 80 M58 66 L62 80" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="78" cy="56" r="6" fill="currentColor"/>`,
+  locust: `<path d="M15 60 L60 55 Q70 45 78 30 M15 60 L20 74 M60 55 L58 70" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="currentColor"/>`,
+  fullLocust: `<path d="M20 65 Q45 68 55 50 Q65 32 75 20 M20 65 Q35 50 32 30" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="14" cy="66" r="6" fill="currentColor"/>`,
+  bowPose: `<path d="M30 60 Q45 30 65 45 Q60 65 40 70 Q28 72 30 60" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="34" cy="55" r="6" fill="currentColor"/>`,
+  kneelLeanBack: `<path d="M45 30 Q55 55 42 75 M45 75 L38 85 M45 75 L52 85 M45 35 L62 40" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  kneelForward: `<path d="M45 40 Q30 55 45 78 M45 40 L45 25 M45 78 L38 85 M45 78 L52 85" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="18" r="6" fill="currentColor"/>`,
+  seatedTwist: `<path d="M45 30 L45 60 M45 60 L28 78 M45 60 L58 74 M45 36 L64 24 M45 36 L30 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  corpse: `<path d="M15 55 L78 55 M28 55 L20 68 M28 55 L24 42 M60 55 L68 68 M60 55 L64 42" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="10" cy="54" r="6" fill="currentColor"/>`,
+  downdog: `<path d="M18 72 L45 38 L72 72" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="32" r="6" fill="currentColor"/>`,
+  updog: `<path d="M15 68 Q45 30 78 58 M40 66 L34 80" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="78" cy="52" r="6" fill="currentColor"/>`,
+  plank: `<path d="M15 55 L75 50 M15 55 L20 70 M75 50 L70 66" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="53" r="6" fill="currentColor"/>`,
+  chaturanga: `<path d="M15 60 L75 60 M15 60 L22 70 M75 60 L68 70" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="currentColor"/>`,
+  pigeon: `<path d="M15 68 L48 60 L75 74 M48 60 L52 30" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="54" cy="24" r="6" fill="currentColor"/>`,
+  warrior1: `<path d="M45 20 L45 50 M45 50 L30 78 M45 50 L62 72 M45 26 L26 18 M45 26 L64 18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="currentColor"/>`,
+  warrior2: `<path d="M45 20 L45 50 M45 50 L26 78 M45 50 L64 78 M45 28 L20 28 M45 28 L70 28" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="currentColor"/>`,
+  lunge: `<path d="M45 22 L45 50 M45 50 L26 82 M45 50 L60 70 M45 28 L60 15" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="16" r="6" fill="currentColor"/>`,
+  bridge: `<path d="M15 62 L45 62 Q60 62 62 45 M15 62 L20 76" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="10" cy="60" r="6" fill="currentColor"/>`,
+  wheel: `<path d="M20 68 Q45 20 70 55 M20 68 L14 55 M70 55 L76 68" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="42" cy="30" r="6" fill="currentColor"/>`,
+  fish: `<path d="M15 60 Q40 60 50 45 Q56 35 62 20 M15 60 L20 74" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="66" cy="16" r="6" fill="currentColor"/>`,
+  butterfly: `<path d="M45 30 L45 55 M45 55 L28 62 M45 55 L62 62 M28 62 L45 68 M62 62 L45 68" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="currentColor"/>`,
+  recliningTwist: `<path d="M18 40 L60 40 M60 40 L72 60 M60 40 L72 22" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="40" r="6" fill="currentColor"/>`,
+  happyBaby: `<path d="M45 55 L45 68 M45 55 L28 40 M45 55 L62 40 M28 40 L20 55 M62 40 L70 55" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="72" r="6" fill="currentColor"/>`,
+  sidePlank: `<path d="M15 60 L75 45 M15 60 L20 74 M75 45 L80 30" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="currentColor"/>`,
+  childs: `<path d="M20 78 Q45 78 52 50 L64 32" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="66" cy="27" r="6" fill="currentColor"/>`,
+  catCow: `<path d="M15 55 Q45 35 78 55 M15 55 L20 70 M78 55 L72 70" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="53" r="6" fill="currentColor"/>`,
+};
+
+export const POSES: Pose[] = [
+  { name: "Standing Deep Breathing", sanskrit: "Pranayama", category: "Standing", focus: "Lungs, warms the body", difficulty: "Beginner", hold: 30, shape: "armsUp", seq: 1, cue: "Fingers interlaced under the chin, inhale as elbows lift wide, exhale as elbows draw together. Sets the breath for the whole practice." },
+  { name: "Half Moon Pose", sanskrit: "Ardha Chandrasana", category: "Backbend", focus: "Spine, obliques, shoulders", difficulty: "Intermediate", hold: 20, shape: "backArch", seq: 2, cue: "Arms overhead, palms pressed together, side bend first, then arch back. Keep hips squared forward." },
+  { name: "Awkward Pose", sanskrit: "Utkatasana", category: "Standing", focus: "Thighs, ankles, core", difficulty: "Intermediate", hold: 20, shape: "chair", seq: 3, cue: "Knees stack over ankles, thighs work toward parallel to the floor, spine long." },
+  { name: "Eagle Pose", sanskrit: "Garudasana", category: "Balance", focus: "Ankles, knees, shoulders", difficulty: "Intermediate", hold: 20, shape: "eagle", seq: 4, cue: "Wrap one leg over the other, opposite arm under, squeeze the wrap and sink the hips." },
+  { name: "Standing Head to Knee", sanskrit: "Dandayamana-Janushirasana", category: "Balance", focus: "Hamstrings, core, focus", difficulty: "Advanced", hold: 20, shape: "standKneeUp", seq: 5, cue: "Clasp the foot, extend the leg forward slowly, keep the standing leg locked and spine tall." },
+  { name: "Standing Bow Pulling Pose", sanskrit: "Dandayamana-Dhanurasana", category: "Balance", focus: "Spine, shoulders, hamstrings", difficulty: "Advanced", hold: 20, shape: "standingBow", seq: 6, cue: "Kick the back foot into the hand while reaching the front arm forward, chest lifts as the leg rises." },
+  { name: "Balancing Stick", sanskrit: "Tuladandasana", category: "Balance", focus: "Full body, cardio", difficulty: "Advanced", hold: 10, shape: "balanceStick", seq: 7, cue: "Fall forward from the hips into a T-shape, arms and back leg parallel to the floor." },
+  { name: "Standing Separate Leg Stretch", sanskrit: "Dandayamana-Bibhaktapada-Paschimotthanasana", category: "Forward Fold", focus: "Hamstrings, lower back", difficulty: "Intermediate", hold: 20, shape: "straddleFold", seq: 8, cue: "Wide stance, fold forward from the hips, hands reach back between the ankles." },
+  { name: "Triangle Pose", sanskrit: "Trikonasana", category: "Standing", focus: "Hips, hamstrings, obliques", difficulty: "Intermediate", hold: 20, shape: "triangle", seq: 9, cue: "Wide stance, front knee bent to 90°, arms extend in one line, gaze to top hand." },
+  { name: "Standing Separate Leg Head to Knee", sanskrit: "Dandayamana-Bibhaktapada-Janushirasana", category: "Forward Fold", focus: "Hamstrings, spine", difficulty: "Intermediate", hold: 20, shape: "straddleFold", seq: 10, cue: "Square the hips to one leg, fold forward, hands frame the foot, forehead reaches toward the shin." },
+  { name: "Tree Pose", sanskrit: "Vrikshasana", category: "Balance", focus: "Balance, ankles, core", difficulty: "Beginner", hold: 30, shape: "tree", seq: 11, cue: "Foot presses into inner thigh or calf (never the knee), hands to heart or overhead." },
+  { name: "Toe Stand", sanskrit: "Padangustasana", category: "Balance", focus: "Ankles, knees, focus", difficulty: "Advanced", hold: 15, shape: "toeStand", seq: 12, cue: "Lower onto the toes of one foot from a squat, other foot rests on the thigh." },
+  { name: "Warrior I", sanskrit: "Virabhadrasana I", category: "Standing", focus: "Legs, hips, shoulders", difficulty: "Beginner", hold: 30, shape: "warrior1", seq: null, cue: "Front knee bent, back leg straight and grounded, arms reach overhead, hips square forward." },
+  { name: "Warrior II", sanskrit: "Virabhadrasana II", category: "Standing", focus: "Legs, core, shoulders", difficulty: "Beginner", hold: 30, shape: "warrior2", seq: null, cue: "Front knee bent over ankle, arms extend parallel to the floor, gaze over the front hand." },
+  { name: "Chair Pose", sanskrit: "Utkatasana", category: "Standing", focus: "Legs, glutes, core", difficulty: "Beginner", hold: 30, shape: "chair", seq: null, cue: "Sit the hips back like lowering onto a chair, weight in the heels, arms reach up." },
+  { name: "Crescent Lunge", sanskrit: "Anjaneyasana", category: "Standing", focus: "Hip flexors, balance", difficulty: "Intermediate", hold: 20, shape: "lunge", seq: null, cue: "Back knee lifted, front knee stacked over ankle, arms reach up and slightly back." },
+  { name: "Extended Side Angle", sanskrit: "Utthita Parsvakonasana", category: "Standing", focus: "Hips, side body", difficulty: "Intermediate", hold: 20, shape: "triangle", seq: null, cue: "Front knee bent deep, forearm to thigh or hand to floor, top arm reaches long overhead." },
+  { name: "Wind Removing Pose", sanskrit: "Pavanamuktasana", category: "Core", focus: "Digestion, lower back", difficulty: "Beginner", hold: 20, shape: "windRemoving", seq: 14, cue: "Lying down, hug one or both knees to the chest, lower back presses into the floor." },
+  { name: "Sit-Up", sanskrit: "Pada-Hasthasana transition", category: "Core", focus: "Abdominals", difficulty: "Beginner", hold: 10, shape: "seatedFold", seq: 15, cue: "Roll up from lying to seated in one smooth motion, arms sweeping overhead first." },
+  { name: "Cobra Pose", sanskrit: "Bhujangasana", category: "Backbend", focus: "Spine, chest", difficulty: "Beginner", hold: 20, shape: "cobra", seq: 16, cue: "Palms under shoulders, lift the chest using back muscles more than the arms, hips stay down." },
+  { name: "Locust Pose", sanskrit: "Salabhasana", category: "Backbend", focus: "Lower back, glutes", difficulty: "Intermediate", hold: 15, shape: "locust", seq: 17, cue: "Arms alongside the body, lift chest and one or both legs, reaching long through the toes." },
+  { name: "Full Locust Pose", sanskrit: "Poorna-Salabhasana", category: "Backbend", focus: "Entire spine", difficulty: "Advanced", hold: 10, shape: "fullLocust", seq: 18, cue: "Arms extend forward, lift chest, arms and both legs off the floor simultaneously." },
+  { name: "Bow Pose", sanskrit: "Dhanurasana", category: "Backbend", focus: "Spine, shoulders, thighs", difficulty: "Advanced", hold: 20, shape: "bowPose", seq: 19, cue: "Hold the ankles from behind, kick the feet up and back to lift chest and thighs off the floor." },
+  { name: "Fixed Firm Pose", sanskrit: "Supta-Vajrasana", category: "Backbend", focus: "Quads, ankles, knees", difficulty: "Advanced", hold: 20, shape: "kneelLeanBack", seq: 20, cue: "Kneeling, sit between the heels, then recline back onto the elbows or floor if flexibility allows." },
+  { name: "Half Tortoise Pose", sanskrit: "Ardha-Kurmasana", category: "Forward Fold", focus: "Shoulders, spine (rest)", difficulty: "Beginner", hold: 30, shape: "kneelForward", seq: 21, cue: "Kneeling, fold forward with arms stretched long in front, forehead toward the floor." },
+  { name: "Camel Pose", sanskrit: "Ustrasana", category: "Backbend", focus: "Chest, hip flexors", difficulty: "Advanced", hold: 20, shape: "kneelLeanBack", seq: 22, cue: "Kneeling, hands to heels, lift the chest up and back, hips press forward over the knees." },
+  { name: "Rabbit Pose", sanskrit: "Sasangasana", category: "Forward Fold", focus: "Spine, counter to camel", difficulty: "Intermediate", hold: 20, shape: "kneelForward", seq: 23, cue: "Forehead tucks toward the knees, hold the heels, round the spine deeply — the counterpose to Camel." },
+  { name: "Head to Knee with Stretching", sanskrit: "Janushirasana-Paschimotthanasana", category: "Forward Fold", focus: "Hamstrings, spine", difficulty: "Intermediate", hold: 20, shape: "seatedFold", seq: 24, cue: "One leg extended, fold over it, then switch to both legs extended for the second half." },
+  { name: "Spine Twist", sanskrit: "Ardha-Matsyendrasana", category: "Twist", focus: "Spine mobility, detox", difficulty: "Beginner", hold: 20, shape: "seatedTwist", seq: 25, cue: "Seated, cross one leg over, twist the torso toward the bent knee, opposite elbow outside it." },
+  { name: "Child's Pose", sanskrit: "Balasana", category: "Restorative", focus: "Lower back, hips (rest)", difficulty: "Beginner", hold: 40, shape: "childs", seq: null, cue: "Big toes together, knees wide or together, forehead rests down, arms extended or by the sides." },
+  { name: "Cat-Cow", sanskrit: "Marjaryasana-Bitilasana", category: "Restorative", focus: "Spine mobility", difficulty: "Beginner", hold: 30, shape: "catCow", seq: null, cue: "On all fours, alternate arching and rounding the spine with the breath." },
+  { name: "Downward Dog", sanskrit: "Adho Mukha Svanasana", category: "Forward Fold", focus: "Shoulders, hamstrings, calves", difficulty: "Beginner", hold: 30, shape: "downdog", seq: null, cue: "Hips lift high and back, heels reach toward the floor, spine stays long." },
+  { name: "Upward Dog", sanskrit: "Urdhva Mukha Svanasana", category: "Backbend", focus: "Spine, chest, shoulders", difficulty: "Intermediate", hold: 15, shape: "updog", seq: null, cue: "Thighs lift off the floor, chest opens forward and up, shoulders stay away from the ears." },
+  { name: "Plank", sanskrit: "Phalakasana", category: "Core", focus: "Core, shoulders, back", difficulty: "Beginner", hold: 30, shape: "plank", seq: null, cue: "Straight line from head to heels, core braced, shoulders stacked over wrists." },
+  { name: "Chaturanga", sanskrit: "Chaturanga Dandasana", category: "Core", focus: "Core, arms, chest", difficulty: "Intermediate", hold: 10, shape: "chaturanga", seq: null, cue: "Lower halfway, elbows tracking close to the ribs, forearms stay vertical." },
+  { name: "Pigeon Pose", sanskrit: "Eka Pada Rajakapotasana", category: "Hip Opener", focus: "Hips, glutes", difficulty: "Intermediate", hold: 30, shape: "pigeon", seq: null, cue: "Front shin angles forward, back leg extends long behind, fold forward for more release." },
+  { name: "Seated Forward Fold", sanskrit: "Paschimottanasana", category: "Forward Fold", focus: "Hamstrings, lower back", difficulty: "Beginner", hold: 30, shape: "seatedFold", seq: null, cue: "Legs extended, hinge from the hips rather than rounding the back, reach for the feet or shins." },
+  { name: "Bridge Pose", sanskrit: "Setu Bandhasana", category: "Backbend", focus: "Glutes, spine, chest", difficulty: "Beginner", hold: 20, shape: "bridge", seq: null, cue: "Feet hip-width, press into the heels to lift the hips, hands can clasp underneath." },
+  { name: "Wheel Pose", sanskrit: "Urdhva Dhanurasana", category: "Backbend", focus: "Full spine, shoulders", difficulty: "Advanced", hold: 15, shape: "wheel", seq: null, cue: "Hands by the ears, press through hands and feet evenly to lift into a full arch." },
+  { name: "Fish Pose", sanskrit: "Matsyasana", category: "Backbend", focus: "Chest, throat, upper back", difficulty: "Intermediate", hold: 20, shape: "fish", seq: null, cue: "Lying down, arch the upper back, crown of the head rests lightly on the floor, chest opens." },
+  { name: "Butterfly Pose", sanskrit: "Baddha Konasana", category: "Hip Opener", focus: "Inner thighs, hips", difficulty: "Beginner", hold: 30, shape: "butterfly", seq: null, cue: "Soles of the feet together, knees release toward the floor, spine stays long." },
+  { name: "Reclining Twist", sanskrit: "Supta Matsyendrasana", category: "Twist", focus: "Spine, lower back release", difficulty: "Beginner", hold: 30, shape: "recliningTwist", seq: null, cue: "Lying down, knees drop to one side while shoulders stay grounded, gaze the opposite way." },
+  { name: "Happy Baby", sanskrit: "Ananda Balasana", category: "Restorative", focus: "Hips, lower back release", difficulty: "Beginner", hold: 30, shape: "happyBaby", seq: null, cue: "Lying down, grab the outer edges of the feet, knees draw toward the armpits." },
+  { name: "Side Plank", sanskrit: "Vasisthasana", category: "Core", focus: "Obliques, shoulders", difficulty: "Intermediate", hold: 20, shape: "sidePlank", seq: null, cue: "Stack the feet, lift the hips high, top arm reaches to the sky." },
+  { name: "Corpse Pose", sanskrit: "Savasana", category: "Restorative", focus: "Full body integration", difficulty: "Beginner", hold: 60, shape: "corpse", seq: 13, cue: "Lie flat, palms up, let the whole body go heavy — this is where the practice absorbs." },
+  { name: "Blowing in Firm Pose", sanskrit: "Kapalbhati Pranayama", category: "Restorative", focus: "Breath, final release", difficulty: "Beginner", hold: 30, shape: "kneelLeanBack", seq: 26, cue: "Kneeling, seated on the heels, forceful exhales through the nose to finish the practice." },
+];
+
+export function exById(exercises: Exercise[], id: string): Exercise | undefined {
+  return exercises.find((e) => e.id === id);
+}
+
+export function activeProgram(programs: Program[], activeProgramId: string | null): Program | undefined {
+  return programs.find((p) => p.id === activeProgramId);
+}
+
+export function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}

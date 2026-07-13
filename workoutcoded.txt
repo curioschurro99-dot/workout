@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldNotes — Training Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#171d18;
+    --surface:#212a22;
+    --surface-2:#28332a;
+    --line:#3a463b;
+    --bone:#ece7da;
+    --bone-dim:#a8ada1;
+    --brass:#c68a3e;
+    --brass-dim:#8f6530;
+    --moss:#7ea366;
+    --moss-dim:#4c6640;
+    --danger:#c15c4a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--bone);
+    font-family:'Work Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    margin:0;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  /* Layout */
+  .app{display:flex;min-height:100vh;}
+  .rail{
+    width:220px;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    padding:24px 0;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .rail-brand{
+    padding:0 20px 20px 20px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:16px;
+  }
+  .rail-brand .display{font-size:22px;color:var(--bone);line-height:1.1;}
+  .rail-brand .sub{font-size:11px;color:var(--bone-dim);letter-spacing:0.08em;margin-top:4px;text-transform:uppercase;}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 20px;
+    color:var(--bone-dim);
+    font-size:13px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    font-weight:500;
+    border-left:3px solid transparent;
+    transition:all .15s ease;
+  }
+  .nav-item .num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--brass-dim);}
+  .nav-item:hover{color:var(--bone);background:rgba(255,255,255,0.02);}
+  .nav-item.active{color:var(--bone);border-left-color:var(--brass);background:var(--surface-2);}
+  .nav-item.active .num{color:var(--brass);}
+
+  .main{flex:1;padding:36px 44px;max-width:1100px;}
+  .view{display:none;}
+  .view.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .page-head{margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;}
+  .page-head h1{font-size:30px;color:var(--bone);}
+  .page-head .desc{color:var(--bone-dim);font-size:14px;margin-top:6px;max-width:520px;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+  }
+  .card + .card{margin-top:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr;}.main{padding:24px 20px;}.app{flex-direction:column;}.rail{width:100%;flex-direction:row;overflow-x:auto;padding:12px;}
+    .rail-brand{display:none;} .nav-item{white-space:nowrap;padding:10px 14px;border-left:none;border-bottom:3px solid transparent;} .nav-item.active{border-left:none;border-bottom-color:var(--brass);}}
+
+  .btn{
+    background:var(--brass);
+    color:#1a1408;
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+  }
+  .btn:hover{background:#d69a4e;}
+  .btn.secondary{background:transparent;color:var(--bone);border:1px solid var(--line);}
+  .btn.secondary:hover{border-color:var(--brass);color:var(--brass);}
+  .btn.danger{background:transparent;color:var(--danger);border:1px solid var(--danger);}
+  .btn.small{padding:6px 12px;font-size:11px;}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    background:var(--bg);
+    border:1px solid var(--line);
+    color:var(--bone);
+    padding:9px 11px;
+    border-radius:6px;
+    font-size:13px;
+    width:100%;
+  }
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brass);}
+  label{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--bone-dim);display:block;margin-bottom:6px;}
+  .field{margin-bottom:12px;}
+  .row{display:flex;gap:10px;align-items:center;}
+
+  .tag{
+    display:inline-block;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:3px 8px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    color:var(--bone-dim);
+    margin-right:6px;
+  }
+  .tag.strength{border-color:var(--brass-dim);color:var(--brass);}
+  .tag.cardio{border-color:#8a4c46;color:#d97e6f;}
+  .tag.mobility{border-color:var(--moss-dim);color:var(--moss);}
+  .tag.yoga{border-color:#5b6b8f;color:#8fa0c9;}
+
+  /* Today view */
+  .day-strip{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .day-pill{
+    padding:8px 14px;border-radius:6px;border:1px solid var(--line);
+    font-size:12px;color:var(--bone-dim);text-transform:uppercase;letter-spacing:0.04em;
+  }
+  .day-pill.current{border-color:var(--brass);color:var(--brass);background:rgba(198,138,62,0.08);}
+  .day-pill.done{color:var(--moss);border-color:var(--moss-dim);}
+
+  .exercise-row{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 0;border-bottom:1px solid var(--line);
+  }
+  .exercise-row:last-child{border-bottom:none;}
+  .check{
+    width:22px;height:22px;border-radius:5px;border:2px solid var(--line);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    color:transparent;font-size:14px;
+  }
+  .check.checked{background:var(--moss);border-color:var(--moss);color:#0e150f;}
+  .ex-info{flex:1;min-width:150px;}
+  .ex-info .name{font-weight:600;font-size:14px;}
+  .ex-info .meta{font-size:12px;color:var(--bone-dim);margin-top:2px;}
+  .ex-inputs{display:flex;gap:8px;}
+  .ex-inputs input{width:64px;text-align:center;}
+
+  /* Timer */
+  .timer-display{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:64px;font-weight:600;text-align:center;
+    color:var(--bone);letter-spacing:0.02em;
+    padding:20px 0;
+  }
+  .timer-display.rest{color:var(--moss);}
+  .timer-display.work{color:var(--brass);}
+  .timer-label{text-align:center;text-transform:uppercase;letter-spacing:0.15em;font-size:12px;color:var(--bone-dim);margin-bottom:4px;}
+  .timer-controls{display:flex;gap:10px;justify-content:center;margin-top:14px;}
+
+  /* Library */
+  .lib-filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .filter-chip{
+    padding:7px 14px;border-radius:20px;border:1px solid var(--line);
+    font-size:12px;color:var(--bone-dim);text-transform:uppercase;letter-spacing:0.03em;
+  }
+  .filter-chip.active{background:var(--brass);border-color:var(--brass);color:#1a1408;}
+  .lib-item{padding:14px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .lib-item:last-child{border-bottom:none;}
+  .lib-item .name{font-weight:600;font-size:14px;}
+  .lib-item .meta{font-size:12px;color:var(--bone-dim);margin-top:3px;}
+
+  /* Program builder */
+  .prog-card{cursor:pointer;transition:border-color .15s;}
+  .prog-card:hover{border-color:var(--brass-dim);}
+  .prog-card.active-program{border-color:var(--brass);}
+  .day-block{border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:10px;}
+  .day-block h3{font-size:14px;color:var(--brass);margin-bottom:8px;}
+  .day-ex-list{font-size:13px;color:var(--bone-dim);}
+  .day-ex-list div{padding:4px 0;}
+
+  /* Knowledge */
+  .note-block{margin-bottom:18px;}
+  .note-block h3{font-size:15px;color:var(--brass);margin-bottom:8px;}
+  .note-block p{font-size:13px;line-height:1.7;color:var(--bone-dim);margin:0 0 8px 0;}
+
+  /* Yoga grid */
+  .pose-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;}
+  .pose-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center;cursor:pointer;transition:border-color .15s;}
+  .pose-card:hover{border-color:var(--brass-dim);}
+  .pose-card svg{width:80px;height:80px;}
+  .pose-card .pname{font-weight:600;font-size:13px;margin-top:8px;}
+  .pose-card .psans{font-size:10px;color:var(--brass);font-style:italic;margin-top:1px;}
+  .pose-card .pfocus{font-size:11px;color:var(--bone-dim);margin-top:5px;line-height:1.4;}
+  .pose-card .pmeta-row{display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .diff-tag{font-size:9px;text-transform:uppercase;letter-spacing:0.04em;padding:2px 7px;border-radius:20px;border:1px solid var(--line);color:var(--bone-dim);}
+  .diff-tag.beginner{border-color:var(--moss-dim);color:var(--moss);}
+  .diff-tag.intermediate{border-color:var(--brass-dim);color:var(--brass);}
+  .diff-tag.advanced{border-color:#8a4c46;color:#d97e6f;}
+  .seq-num{position:absolute;top:10px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass-dim);}
+  .pose-card{position:relative;}
+
+  .seq-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:32px;text-align:center;}
+  .seq-hero svg{width:150px;height:150px;}
+  .seq-hero .sname{font-size:26px;margin-top:10px;}
+  .seq-hero .ssans{font-size:14px;color:var(--brass);font-style:italic;margin-top:2px;}
+  .seq-hero .scue{font-size:13px;color:var(--bone-dim);max-width:440px;margin:14px auto 0 auto;line-height:1.7;}
+  .seq-progress{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bone-dim);margin-bottom:10px;letter-spacing:0.05em;}
+  .seq-timer{font-family:'IBM Plex Mono',monospace;font-size:48px;color:var(--brass);margin-top:16px;}
+  .seq-controls{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+  .seq-options{display:flex;justify-content:center;gap:18px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .voice-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--bone-dim);text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;}
+  .voice-toggle input{width:16px;height:16px;accent-color:var(--brass);}
+  .video-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+  .video-panel .vp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .video-panel .vp-head h3{font-size:13px;color:var(--brass);text-transform:uppercase;letter-spacing:0.05em;}
+  .video-panel .vp-input-row{display:flex;gap:8px;}
+  .video-panel .vp-input-row input{flex:1;}
+  .video-embed{width:100%;aspect-ratio:16/9;border-radius:8px;overflow:hidden;margin-top:12px;border:1px solid var(--line);}
+  .video-embed iframe{width:100%;height:100%;border:0;}
+  .seq-bar-bg{width:100%;max-width:440px;margin:16px auto 0 auto;height:5px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--line);}
+  .seq-bar-fill{height:100%;background:var(--brass);transition:width .3s linear;}
+
+  /* Stats */
+  .stat{text-align:center;padding:16px;}
+  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:32px;color:var(--brass);}
+  .stat .label{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--bone-dim);margin-top:4px;}
+
+  .empty{color:var(--bone-dim);font-size:13px;padding:20px 0;text-align:center;}
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(10,12,10,0.7);z-index:50;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;width:420px;max-width:92vw;max-height:85vh;overflow-y:auto;}
+  .modal h2{font-size:18px;margin-bottom:16px;}
+  .close-x{float:right;color:var(--bone-dim);font-size:20px;line-height:1;}
+  .goal-bar-bg{width:100%;height:8px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--line);}
+  .goal-bar-fill{height:100%;background:linear-gradient(90deg,var(--brass-dim),var(--brass));}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="rail">
+    <div class="rail-brand">
+      <div class="display">FieldNotes</div>
+      <div class="sub">Training Log</div>
+    </div>
+    <div class="nav-item active" data-view="today"><span class="num">01</span> Today</div>
+    <div class="nav-item" data-view="programs"><span class="num">02</span> Programs</div>
+    <div class="nav-item" data-view="library"><span class="num">03</span> Library</div>
+    <div class="nav-item" data-view="progress"><span class="num">04</span> Progress</div>
+    <div class="nav-item" data-view="knowledge"><span class="num">05</span> Knowledge</div>
+    <div class="nav-item" data-view="yoga"><span class="num">06</span> Yoga</div>
+  </div>
+
+  <div class="main">
+
+    <!-- TODAY -->
+    <div class="view active" id="view-today">
+      <div class="page-head">
+        <div>
+          <h1 id="today-title">Today</h1>
+          <div class="desc" id="today-desc">Pick an active program to see your workout for today.</div>
+        </div>
+      </div>
+
+      <div class="day-strip" id="day-strip"></div>
+
+      <div class="card" id="today-card">
+        <div class="empty">No active program yet. Go to <b>Programs</b> to start one.</div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="timer-label">Interval Timer</div>
+        <div class="row" style="justify-content:center;gap:18px;margin-bottom:6px;">
+          <div class="field" style="width:90px;"><label>Work (s)</label><input type="number" id="t-work" value="40"></div>
+          <div class="field" style="width:90px;"><label>Rest (s)</label><input type="number" id="t-rest" value="20"></div>
+          <div class="field" style="width:90px;"><label>Rounds</label><input type="number" id="t-rounds" value="5"></div>
+        </div>
+        <div class="timer-label" id="timer-phase-label">Ready</div>
+        <div class="timer-display" id="timer-display">00:40</div>
+        <div class="timer-controls">
+          <button class="btn" id="t-start">Start</button>
+          <button class="btn secondary" id="t-pause">Pause</button>
+          <button class="btn secondary" id="t-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div class="view" id="view-programs">
+      <div class="page-head">
+        <div>
+          <h1>Programs</h1>
+          <div class="desc">Build a routine day by day, or use the pre-loaded 7-Day Recomposition Plan.</div>
+        </div>
+        <button class="btn" id="new-program-btn">+ New Program</button>
+      </div>
+      <div id="programs-list"></div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="view" id="view-library">
+      <div class="page-head">
+        <div>
+          <h1>Library</h1>
+          <div class="desc">Every exercise available to add into a program.</div>
+        </div>
+        <button class="btn" id="new-exercise-btn">+ Add Exercise</button>
+      </div>
+      <div class="lib-filters" id="lib-filters"></div>
+      <div class="card" id="library-list"></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="view" id="view-progress">
+      <div class="page-head">
+        <div>
+          <h1>Progress</h1>
+          <div class="desc">Goals, streaks, and your session history.</div>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-bottom:16px;">
+        <div class="card stat"><div class="num" id="stat-streak">0</div><div class="label">Day Streak</div></div>
+        <div class="card stat"><div class="num" id="stat-total">0</div><div class="label">Sessions Logged</div></div>
+        <div class="card stat"><div class="num" id="stat-week">0</div><div class="label">This Week</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="row" style="justify-content:space-between;">
+          <h3 style="font-size:15px;color:var(--brass);">Goal</h3>
+          <button class="btn small secondary" id="edit-goal-btn">Edit</button>
+        </div>
+        <div id="goal-display" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:15px;color:var(--brass);margin-bottom:12px;">History</h3>
+        <div id="history-list"><div class="empty">No sessions logged yet.</div></div>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE -->
+    <div class="view" id="view-knowledge">
+      <div class="page-head">
+        <div>
+          <h1>Knowledge</h1>
+          <div class="desc">Reference notes — why the plan is built this way.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="note-block">
+          <h3>Recomposition, not one-then-the-other</h3>
+          <p>You don't need to build muscle first and lose fat later. Training for strength while eating in a modest calorie deficit lets a beginner lose fat and build muscle at the same time — the response to new training stimulus is fastest in the first few months.</p>
+        </div>
+        <div class="note-block">
+          <h3>Strength before pure cardio</h3>
+          <p>HIIT burns calories short-term. Strength training builds the muscle that raises resting metabolism long-term and shapes the body. Starting split: 4 strength days, 1–2 light cardio/HIIT days, rest days built in.</p>
+        </div>
+        <div class="note-block">
+          <h3>Protein & calories matter more than the workout</h3>
+          <p>Fat loss needs a calorie deficit; muscle building needs enough protein — roughly 1.2–1.6g per kg of bodyweight is a common target — plus enough total food to fuel the sessions. Moderate deficit, adequate protein, is the combination that lets both happen together.</p>
+        </div>
+        <div class="note-block">
+          <h3>Choosing a starting dumbbell weight</h3>
+          <p>The right weight is one where the last 2–3 reps of a set feel hard but form stays clean. Breezing through with no fatigue: go up. Form breaking down before the set ends: go lighter. Starting points for a smaller frame — goblet squats 4–6kg, rows 3–4kg, shoulder press 2–3kg, curls 2–3kg per hand.</p>
+        </div>
+        <div class="note-block">
+          <h3>Progression rule</h3>
+          <p>When a rep range feels easy for two sessions in a row, add weight or reps. Consistency across 8–12 weeks matters more than intensity in week one.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="row" style="justify-content:space-between;">
+          <h3 style="font-size:15px;color:var(--brass);">My Notes</h3>
+          <button class="btn small secondary" id="add-note-btn">+ Add Note</button>
+        </div>
+        <div id="my-notes" style="margin-top:10px;"><div class="empty">No personal notes yet.</div></div>
+      </div>
+    </div>
+
+    <!-- YOGA -->
+    <div class="view" id="view-yoga">
+      <div class="page-head">
+        <div>
+          <h1 id="yoga-title">Yoga</h1>
+          <div class="desc" id="yoga-desc">50 poses across standing, backbend, forward fold, twist, balance, hip-opener, core and restorative — tagged by focus and difficulty.</div>
+        </div>
+        <button class="btn" id="start-sequence-btn">▶ Start Guided Hot Yoga Flow</button>
+      </div>
+
+      <div id="yoga-browse">
+        <div class="lib-filters" id="yoga-filters"></div>
+        <div class="pose-grid" id="pose-grid"></div>
+      </div>
+
+      <div id="yoga-sequence" style="display:none;">
+        <div class="video-panel">
+          <div class="vp-head">
+            <h3>Follow a Real Instructor (optional)</h3>
+            <button class="btn small secondary" id="video-clear-btn">Clear</button>
+          </div>
+          <div class="vp-input-row">
+            <input type="text" id="video-url-input" placeholder="Paste a YouTube link for a hot yoga class you like...">
+            <button class="btn small" id="video-save-btn">Load</button>
+          </div>
+          <div id="video-embed-wrap"></div>
+        </div>
+
+        <div class="seq-options">
+          <label class="voice-toggle"><input type="checkbox" id="voice-coach-toggle"> Voice Coach (spoken cues)</label>
+        </div>
+
+        <div class="seq-progress" id="seq-progress"></div>
+        <div class="seq-bar-bg"><div class="seq-bar-fill" id="seq-bar-fill" style="width:0%;"></div></div>
+        <div class="seq-hero" style="margin-top:14px;">
+          <svg viewBox="0 0 90 90" id="seq-svg"></svg>
+          <div class="sname" id="seq-name"></div>
+          <div class="ssans" id="seq-sans"></div>
+          <div class="seq-timer" id="seq-timer">30</div>
+          <div class="scue" id="seq-cue"></div>
+        </div>
+        <div class="seq-controls">
+          <button class="btn secondary" id="seq-prev">◀ Prev</button>
+          <button class="btn" id="seq-pause">Pause</button>
+          <button class="btn secondary" id="seq-next">Next ▶</button>
+          <button class="btn danger" id="seq-exit">Exit Flow</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+/* ---------------- DATA LAYER ---------------- */
+const DB_KEY = 'fieldnotes_data_v1';
+
+function loadDB(){
+  const raw = localStorage.getItem(DB_KEY);
+  if(raw) return JSON.parse(raw);
+  return seedDB();
+}
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+function seedDB(){
+  const ex = [
+    {id:'bw-squat', name:'Bodyweight Squat', cat:'strength', muscle:'Legs', sets:3, reps:15, note:'Add dumbbells once easy.'},
+    {id:'glute-bridge', name:'Glute Bridge', cat:'strength', muscle:'Glutes', sets:3, reps:15},
+    {id:'walk-lunge', name:'Walking Lunge', cat:'strength', muscle:'Legs', sets:3, reps:10, note:'Per leg. Bodyweight first.'},
+    {id:'calf-raise', name:'Standing Calf Raise', cat:'strength', muscle:'Calves', sets:3, reps:20},
+    {id:'wall-sit', name:'Wall Sit', cat:'strength', muscle:'Legs', sets:3, reps:25, note:'Seconds, not reps.'},
+    {id:'incline-pushup', name:'Incline Push-Up', cat:'strength', muscle:'Chest', sets:3, reps:10, note:'Hands elevated on bench/couch.'},
+    {id:'db-row', name:'Dumbbell Row', cat:'strength', muscle:'Back', sets:3, reps:12, note:'Per arm. Start 3-4kg.'},
+    {id:'db-shoulder-press', name:'Dumbbell Shoulder Press', cat:'strength', muscle:'Shoulders', sets:3, reps:10, note:'Start light, 2-3kg.'},
+    {id:'band-pullapart', name:'Band Pull-Apart', cat:'strength', muscle:'Back', sets:3, reps:15},
+    {id:'bicep-curl', name:'Bicep Curl', cat:'strength', muscle:'Arms', sets:3, reps:12, note:'Start 2-3kg.'},
+    {id:'walk', name:'Brisk Walk / Easy Cycle', cat:'cardio', muscle:'Full Body', sets:1, reps:1, note:'20-25 min.'},
+    {id:'plank', name:'Plank', cat:'strength', muscle:'Core', sets:3, reps:25, note:'Seconds. Build up over weeks.'},
+    {id:'dead-bug', name:'Dead Bug', cat:'strength', muscle:'Core', sets:3, reps:10, note:'Per side.'},
+    {id:'bird-dog', name:'Bird Dog', cat:'strength', muscle:'Core', sets:3, reps:10, note:'Per side.'},
+    {id:'goblet-squat', name:'Goblet Squat', cat:'strength', muscle:'Legs', sets:3, reps:12, note:'Start 4-6kg.'},
+    {id:'db-deadlift', name:'Dumbbell Deadlift', cat:'strength', muscle:'Legs', sets:3, reps:10, note:'Light weight, focus hip hinge.'},
+    {id:'side-plank', name:'Side Plank', cat:'strength', muscle:'Core', sets:2, reps:18, note:'Seconds, per side.'},
+    {id:'hiit-circuit', name:'Bodyweight HIIT Circuit', cat:'cardio', muscle:'Full Body', sets:8, reps:30, note:'30s work / 30s rest. Jumping jacks, high knees, squats, mountain climbers.'},
+    {id:'kb-swing', name:'Kettlebell Swing', cat:'strength', muscle:'Glutes', sets:4, reps:15},
+    {id:'box-stepup', name:'Box Step-Up', cat:'strength', muscle:'Legs', sets:3, reps:12, note:'Per leg.'},
+    {id:'hip-thrust', name:'Hip Thrust', cat:'strength', muscle:'Glutes', sets:4, reps:15},
+    {id:'lateral-band-walk', name:'Lateral Band Walk', cat:'strength', muscle:'Glutes', sets:3, reps:20, note:'Steps.'},
+    {id:'yoga-flow', name:'Gentle Yoga Flow', cat:'mobility', muscle:'Full Body', sets:1, reps:1, note:'15-20 min. See Yoga tab.'},
+  ];
+
+  const program = {
+    id: 'magnus-recomp',
+    name: 'Magnus Method — 7 Day Recomposition',
+    desc: 'Beginner-friendly strength-first split with light cardio, built to lose fat and build muscle at the same time.',
+    days: [
+      {label:'Day 1', focus:'Lower Body Strength', exercises:[
+        {exId:'bw-squat', sets:3, reps:15},
+        {exId:'glute-bridge', sets:3, reps:15},
+        {exId:'walk-lunge', sets:3, reps:10},
+        {exId:'calf-raise', sets:3, reps:20},
+        {exId:'wall-sit', sets:3, reps:25},
+      ]},
+      {label:'Day 2', focus:'Upper Body Strength', exercises:[
+        {exId:'incline-pushup', sets:3, reps:10},
+        {exId:'db-row', sets:3, reps:12},
+        {exId:'db-shoulder-press', sets:3, reps:10},
+        {exId:'band-pullapart', sets:3, reps:15},
+        {exId:'bicep-curl', sets:3, reps:12},
+      ]},
+      {label:'Day 3', focus:'Light Cardio + Core', exercises:[
+        {exId:'walk', sets:1, reps:1},
+        {exId:'plank', sets:3, reps:25},
+        {exId:'dead-bug', sets:3, reps:10},
+        {exId:'bird-dog', sets:3, reps:10},
+      ]},
+      {label:'Day 4', focus:'Rest', exercises:[]},
+      {label:'Day 5', focus:'Full Body Strength', exercises:[
+        {exId:'goblet-squat', sets:3, reps:12},
+        {exId:'db-deadlift', sets:3, reps:10},
+        {exId:'incline-pushup', sets:3, reps:10},
+        {exId:'db-row', sets:3, reps:15},
+        {exId:'side-plank', sets:2, reps:18},
+      ]},
+      {label:'Day 6', focus:'Short HIIT (15-20min)', exercises:[
+        {exId:'hiit-circuit', sets:8, reps:30},
+      ]},
+      {label:'Day 7', focus:'Rest / Mobility', exercises:[
+        {exId:'yoga-flow', sets:1, reps:1},
+      ]},
+    ]
+  };
+
+  const data = {
+    exercises: ex,
+    programs: [program],
+    activeProgramId: program.id,
+    activeDayIndex: 0,
+    logs: [],
+    goal: {targetWeight:'', weeklyTarget:5, notes:'', startDate: new Date().toISOString().slice(0,10)},
+    myNotes: [],
+    checks: {},
+    videoUrl: ''
+  };
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
+  return data;
+}
+
+let DB = loadDB();
+if(DB.videoUrl === undefined) DB.videoUrl = '';
+
+/* ---------------- YOGA POSE DATA (original simple line-art) ---------------- */
+const S='var(--bone-dim)', A='var(--brass)';
+const SHAPES = {
+  standing: `<path d="M45 15 L45 65 M45 28 L28 45 M45 28 L62 45 M45 65 L30 85 M45 65 L60 85" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="10" r="6" fill="${A}"/>`,
+  armsUp: `<path d="M45 22 L45 65 M45 28 L28 12 M45 28 L62 12 M45 65 L30 85 M45 65 L60 85" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="16" r="6" fill="${A}"/>`,
+  backArch: `<path d="M45 20 Q55 45 42 70 M45 26 L28 14 M45 26 L60 30 M42 70 L28 85 M42 70 L54 85" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="14" r="6" fill="${A}"/>`,
+  chair: `<path d="M45 20 L45 48 M45 48 L30 80 M45 48 L58 78 M45 25 L62 32" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="${A}"/>`,
+  eagle: `<path d="M45 20 L45 55 M45 30 Q52 35 45 42 Q38 48 45 52 M45 55 Q52 65 45 75 Q38 82 46 85" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="${A}"/>`,
+  standKneeUp: `<path d="M45 18 L45 55 M45 55 L30 85 M45 35 L62 25 M45 55 Q52 45 48 32" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="${A}"/>`,
+  standingBow: `<path d="M45 22 Q52 42 40 60 M45 28 L62 15 M40 60 L52 82 M40 60 Q30 45 22 30" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="16" r="6" fill="${A}"/>`,
+  balanceStick: `<path d="M20 40 L70 40 M20 40 L12 55 M70 40 L82 30" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="16" cy="44" r="6" fill="${A}"/>`,
+  straddleFold: `<path d="M45 25 L45 45 M45 45 L25 78 M45 45 L65 78 M45 30 L45 65" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="66" r="6" fill="${A}"/>`,
+  triangle: `<path d="M45 18 L30 80 M45 18 L62 55 M45 18 L20 26" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="${A}"/>`,
+  tree: `<path d="M45 18 L45 70 M45 70 L28 82 M45 42 L30 42 M45 20 L30 8 M45 20 L60 8" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="12" r="6" fill="${A}"/>`,
+  toeStand: `<path d="M45 30 L45 55 M45 55 L38 78 M45 40 L60 35 M45 40 L30 48" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="${A}"/>`,
+  seatedFold: `<path d="M20 75 L55 75 M20 75 Q40 55 55 30 M55 75 L60 60" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="58" cy="26" r="6" fill="${A}"/>`,
+  windRemoving: `<path d="M25 55 Q45 40 55 55 M25 55 L15 62 M55 55 L65 62" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="50" r="6" fill="${A}"/>`,
+  cobra: `<path d="M15 68 Q45 35 78 62 M40 68 L36 80 M58 66 L62 80" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="78" cy="56" r="6" fill="${A}"/>`,
+  locust: `<path d="M15 60 L60 55 Q70 45 78 30 M15 60 L20 74 M60 55 L58 70" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="${A}"/>`,
+  fullLocust: `<path d="M20 65 Q45 68 55 50 Q65 32 75 20 M20 65 Q35 50 32 30" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="14" cy="66" r="6" fill="${A}"/>`,
+  bowPose: `<path d="M30 60 Q45 30 65 45 Q60 65 40 70 Q28 72 30 60" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="34" cy="55" r="6" fill="${A}"/>`,
+  kneelLeanBack: `<path d="M45 30 Q55 55 42 75 M45 75 L38 85 M45 75 L52 85 M45 35 L62 40" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="${A}"/>`,
+  kneelForward: `<path d="M45 40 Q30 55 45 78 M45 40 L45 25 M45 78 L38 85 M45 78 L52 85" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="18" r="6" fill="${A}"/>`,
+  seatedTwist: `<path d="M45 30 L45 60 M45 60 L28 78 M45 60 L58 74 M45 36 L64 24 M45 36 L30 44" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="${A}"/>`,
+  corpse: `<path d="M15 55 L78 55 M28 55 L20 68 M28 55 L24 42 M60 55 L68 68 M60 55 L64 42" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="10" cy="54" r="6" fill="${A}"/>`,
+  downdog: `<path d="M18 72 L45 38 L72 72" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="32" r="6" fill="${A}"/>`,
+  updog: `<path d="M15 68 Q45 30 78 58 M40 66 L34 80" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="78" cy="52" r="6" fill="${A}"/>`,
+  plank: `<path d="M15 55 L75 50 M15 55 L20 70 M75 50 L70 66" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="53" r="6" fill="${A}"/>`,
+  chaturanga: `<path d="M15 60 L75 60 M15 60 L22 70 M75 60 L68 70" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="${A}"/>`,
+  pigeon: `<path d="M15 68 L48 60 L75 74 M48 60 L52 30" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="54" cy="24" r="6" fill="${A}"/>`,
+  warrior1: `<path d="M45 20 L45 50 M45 50 L30 78 M45 50 L62 72 M45 26 L26 18 M45 26 L64 18" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="${A}"/>`,
+  warrior2: `<path d="M45 20 L45 50 M45 50 L26 78 M45 50 L64 78 M45 28 L20 28 M45 28 L70 28" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="14" r="6" fill="${A}"/>`,
+  lunge: `<path d="M45 22 L45 50 M45 50 L26 82 M45 50 L60 70 M45 28 L60 15" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="16" r="6" fill="${A}"/>`,
+  bridge: `<path d="M15 62 L45 62 Q60 62 62 45 M15 62 L20 76" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="10" cy="60" r="6" fill="${A}"/>`,
+  wheel: `<path d="M20 68 Q45 20 70 55 M20 68 L14 55 M70 55 L76 68" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="42" cy="30" r="6" fill="${A}"/>`,
+  fish: `<path d="M15 60 Q40 60 50 45 Q56 35 62 20 M15 60 L20 74" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="66" cy="16" r="6" fill="${A}"/>`,
+  butterfly: `<path d="M45 30 L45 55 M45 55 L28 62 M45 55 L62 62 M28 62 L45 68 M62 62 L45 68" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="24" r="6" fill="${A}"/>`,
+  recliningTwist: `<path d="M18 40 L60 40 M60 40 L72 60 M60 40 L72 22" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="40" r="6" fill="${A}"/>`,
+  happyBaby: `<path d="M45 55 L45 68 M45 55 L28 40 M45 55 L62 40 M28 40 L20 55 M62 40 L70 55" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="45" cy="72" r="6" fill="${A}"/>`,
+  sidePlank: `<path d="M15 60 L75 45 M15 60 L20 74 M75 45 L80 30" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="58" r="6" fill="${A}"/>`,
+  childs: `<path d="M20 78 Q45 78 52 50 L64 32" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="66" cy="27" r="6" fill="${A}"/>`,
+  catCow: `<path d="M15 55 Q45 35 78 55 M15 55 L20 70 M78 55 L72 70" stroke="${S}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="53" r="6" fill="${A}"/>`,
+};
+
+const POSES = [
+  // --- Standing ---
+  {name:'Standing Deep Breathing', sanskrit:'Pranayama', category:'Standing', focus:'Lungs, warms the body', difficulty:'Beginner', hold:30, shape:'armsUp', seq:1, cue:'Fingers interlaced under the chin, inhale as elbows lift wide, exhale as elbows draw together. Sets the breath for the whole practice.'},
+  {name:'Half Moon Pose', sanskrit:'Ardha Chandrasana', category:'Backbend', focus:'Spine, obliques, shoulders', difficulty:'Intermediate', hold:20, shape:'backArch', seq:2, cue:'Arms overhead, palms pressed together, side bend first, then arch back. Keep hips squared forward.'},
+  {name:'Awkward Pose', sanskrit:'Utkatasana', category:'Standing', focus:'Thighs, ankles, core', difficulty:'Intermediate', hold:20, shape:'chair', seq:3, cue:'Knees stack over ankles, thighs work toward parallel to the floor, spine long.'},
+  {name:'Eagle Pose', sanskrit:'Garudasana', category:'Balance', focus:'Ankles, knees, shoulders', difficulty:'Intermediate', hold:20, shape:'eagle', seq:4, cue:'Wrap one leg over the other, opposite arm under, squeeze the wrap and sink the hips.'},
+  {name:'Standing Head to Knee', sanskrit:'Dandayamana-Janushirasana', category:'Balance', focus:'Hamstrings, core, focus', difficulty:'Advanced', hold:20, shape:'standKneeUp', seq:5, cue:'Clasp the foot, extend the leg forward slowly, keep the standing leg locked and spine tall.'},
+  {name:'Standing Bow Pulling Pose', sanskrit:'Dandayamana-Dhanurasana', category:'Balance', focus:'Spine, shoulders, hamstrings', difficulty:'Advanced', hold:20, shape:'standingBow', seq:6, cue:'Kick the back foot into the hand while reaching the front arm forward, chest lifts as the leg rises.'},
+  {name:'Balancing Stick', sanskrit:'Tuladandasana', category:'Balance', focus:'Full body, cardio', difficulty:'Advanced', hold:10, shape:'balanceStick', seq:7, cue:'Fall forward from the hips into a T-shape, arms and back leg parallel to the floor.'},
+  {name:'Standing Separate Leg Stretch', sanskrit:'Dandayamana-Bibhaktapada-Paschimotthanasana', category:'Forward Fold', focus:'Hamstrings, lower back', difficulty:'Intermediate', hold:20, shape:'straddleFold', seq:8, cue:'Wide stance, fold forward from the hips, hands reach back between the ankles.'},
+  {name:'Triangle Pose', sanskrit:'Trikonasana', category:'Standing', focus:'Hips, hamstrings, obliques', difficulty:'Intermediate', hold:20, shape:'triangle', seq:9, cue:'Wide stance, front knee bent to 90°, arms extend in one line, gaze to top hand.'},
+  {name:'Standing Separate Leg Head to Knee', sanskrit:'Dandayamana-Bibhaktapada-Janushirasana', category:'Forward Fold', focus:'Hamstrings, spine', difficulty:'Intermediate', hold:20, shape:'straddleFold', seq:10, cue:'Square the hips to one leg, fold forward, hands frame the foot, forehead reaches toward the shin.'},
+  {name:'Tree Pose', sanskrit:'Vrikshasana', category:'Balance', focus:'Balance, ankles, core', difficulty:'Beginner', hold:30, shape:'tree', seq:11, cue:'Foot presses into inner thigh or calf (never the knee), hands to heart or overhead.'},
+  {name:'Toe Stand', sanskrit:'Padangustasana', category:'Balance', focus:'Ankles, knees, focus', difficulty:'Advanced', hold:15, shape:'toeStand', seq:12, cue:'Lower onto the toes of one foot from a squat, other foot rests on the thigh.'},
+  {name:'Warrior I', sanskrit:'Virabhadrasana I', category:'Standing', focus:'Legs, hips, shoulders', difficulty:'Beginner', hold:30, shape:'warrior1', seq:null, cue:'Front knee bent, back leg straight and grounded, arms reach overhead, hips square forward.'},
+  {name:'Warrior II', sanskrit:'Virabhadrasana II', category:'Standing', focus:'Legs, core, shoulders', difficulty:'Beginner', hold:30, shape:'warrior2', seq:null, cue:'Front knee bent over ankle, arms extend parallel to the floor, gaze over the front hand.'},
+  {name:'Chair Pose', sanskrit:'Utkatasana', category:'Standing', focus:'Legs, glutes, core', difficulty:'Beginner', hold:30, shape:'chair', seq:null, cue:'Sit the hips back like lowering onto a chair, weight in the heels, arms reach up.'},
+  {name:'Crescent Lunge', sanskrit:'Anjaneyasana', category:'Standing', focus:'Hip flexors, balance', difficulty:'Intermediate', hold:20, shape:'lunge', seq:null, cue:'Back knee lifted, front knee stacked over ankle, arms reach up and slightly back.'},
+  {name:'Extended Side Angle', sanskrit:'Utthita Parsvakonasana', category:'Standing', focus:'Hips, side body', difficulty:'Intermediate', hold:20, shape:'triangle', seq:null, cue:'Front knee bent deep, forearm to thigh or hand to floor, top arm reaches long overhead.'},
+
+  // --- Floor / Core ---
+  {name:'Wind Removing Pose', sanskrit:'Pavanamuktasana', category:'Core', focus:'Digestion, lower back', difficulty:'Beginner', hold:20, shape:'windRemoving', seq:14, cue:'Lying down, hug one or both knees to the chest, lower back presses into the floor.'},
+  {name:'Sit-Up', sanskrit:'Pada-Hasthasana transition', category:'Core', focus:'Abdominals', difficulty:'Beginner', hold:10, shape:'seatedFold', seq:15, cue:'Roll up from lying to seated in one smooth motion, arms sweeping overhead first.'},
+  {name:'Cobra Pose', sanskrit:'Bhujangasana', category:'Backbend', focus:'Spine, chest', difficulty:'Beginner', hold:20, shape:'cobra', seq:16, cue:'Palms under shoulders, lift the chest using back muscles more than the arms, hips stay down.'},
+  {name:'Locust Pose', sanskrit:'Salabhasana', category:'Backbend', focus:'Lower back, glutes', difficulty:'Intermediate', hold:15, shape:'locust', seq:17, cue:'Arms alongside the body, lift chest and one or both legs, reaching long through the toes.'},
+  {name:'Full Locust Pose', sanskrit:'Poorna-Salabhasana', category:'Backbend', focus:'Entire spine', difficulty:'Advanced', hold:10, shape:'fullLocust', seq:18, cue:'Arms extend forward, lift chest, arms and both legs off the floor simultaneously.'},
+  {name:'Bow Pose', sanskrit:'Dhanurasana', category:'Backbend', focus:'Spine, shoulders, thighs', difficulty:'Advanced', hold:20, shape:'bowPose', seq:19, cue:'Hold the ankles from behind, kick the feet up and back to lift chest and thighs off the floor.'},
+  {name:'Fixed Firm Pose', sanskrit:'Supta-Vajrasana', category:'Backbend', focus:'Quads, ankles, knees', difficulty:'Advanced', hold:20, shape:'kneelLeanBack', seq:20, cue:'Kneeling, sit between the heels, then recline back onto the elbows or floor if flexibility allows.'},
+  {name:'Half Tortoise Pose', sanskrit:'Ardha-Kurmasana', category:'Forward Fold', focus:'Shoulders, spine (rest)', difficulty:'Beginner', hold:30, shape:'kneelForward', seq:21, cue:'Kneeling, fold forward with arms stretched long in front, forehead toward the floor.'},
+  {name:'Camel Pose', sanskrit:'Ustrasana', category:'Backbend', focus:'Chest, hip flexors', difficulty:'Advanced', hold:20, shape:'kneelLeanBack', seq:22, cue:'Kneeling, hands to heels, lift the chest up and back, hips press forward over the knees.'},
+  {name:'Rabbit Pose', sanskrit:'Sasangasana', category:'Forward Fold', focus:'Spine, counter to camel', difficulty:'Intermediate', hold:20, shape:'kneelForward', seq:23, cue:'Forehead tucks toward the knees, hold the heels, round the spine deeply — the counterpose to Camel.'},
+  {name:'Head to Knee with Stretching', sanskrit:'Janushirasana-Paschimotthanasana', category:'Forward Fold', focus:'Hamstrings, spine', difficulty:'Intermediate', hold:20, shape:'seatedFold', seq:24, cue:'One leg extended, fold over it, then switch to both legs extended for the second half.'},
+  {name:'Spine Twist', sanskrit:'Ardha-Matsyendrasana', category:'Twist', focus:'Spine mobility, detox', difficulty:'Beginner', hold:20, shape:'seatedTwist', seq:25, cue:'Seated, cross one leg over, twist the torso toward the bent knee, opposite elbow outside it.'},
+  {name:"Child's Pose", sanskrit:'Balasana', category:'Restorative', focus:'Lower back, hips (rest)', difficulty:'Beginner', hold:40, shape:'childs', seq:null, cue:'Big toes together, knees wide or together, forehead rests down, arms extended or by the sides.'},
+  {name:'Cat-Cow', sanskrit:'Marjaryasana-Bitilasana', category:'Restorative', focus:'Spine mobility', difficulty:'Beginner', hold:30, shape:'catCow', seq:null, cue:'On all fours, alternate arching and rounding the spine with the breath.'},
+  {name:'Downward Dog', sanskrit:'Adho Mukha Svanasana', category:'Forward Fold', focus:'Shoulders, hamstrings, calves', difficulty:'Beginner', hold:30, shape:'downdog', seq:null, cue:'Hips lift high and back, heels reach toward the floor, spine stays long.'},
+  {name:'Upward Dog', sanskrit:'Urdhva Mukha Svanasana', category:'Backbend', focus:'Spine, chest, shoulders', difficulty:'Intermediate', hold:15, shape:'updog', seq:null, cue:'Thighs lift off the floor, chest opens forward and up, shoulders stay away from the ears.'},
+  {name:'Plank', sanskrit:'Phalakasana', category:'Core', focus:'Core, shoulders, back', difficulty:'Beginner', hold:30, shape:'plank', seq:null, cue:'Straight line from head to heels, core braced, shoulders stacked over wrists.'},
+  {name:'Chaturanga', sanskrit:'Chaturanga Dandasana', category:'Core', focus:'Core, arms, chest', difficulty:'Intermediate', hold:10, shape:'chaturanga', seq:null, cue:'Lower halfway, elbows tracking close to the ribs, forearms stay vertical.'},
+  {name:'Pigeon Pose', sanskrit:'Eka Pada Rajakapotasana', category:'Hip Opener', focus:'Hips, glutes', difficulty:'Intermediate', hold:30, shape:'pigeon', seq:null, cue:'Front shin angles forward, back leg extends long behind, fold forward for more release.'},
+  {name:'Seated Forward Fold', sanskrit:'Paschimottanasana', category:'Forward Fold', focus:'Hamstrings, lower back', difficulty:'Beginner', hold:30, shape:'seatedFold', seq:null, cue:'Legs extended, hinge from the hips rather than rounding the back, reach for the feet or shins.'},
+  {name:'Bridge Pose', sanskrit:'Setu Bandhasana', category:'Backbend', focus:'Glutes, spine, chest', difficulty:'Beginner', hold:20, shape:'bridge', seq:null, cue:'Feet hip-width, press into the heels to lift the hips, hands can clasp underneath.'},
+  {name:'Wheel Pose', sanskrit:'Urdhva Dhanurasana', category:'Backbend', focus:'Full spine, shoulders', difficulty:'Advanced', hold:15, shape:'wheel', seq:null, cue:'Hands by the ears, press through hands and feet evenly to lift into a full arch.'},
+  {name:'Fish Pose', sanskrit:'Matsyasana', category:'Backbend', focus:'Chest, throat, upper back', difficulty:'Intermediate', hold:20, shape:'fish', seq:null, cue:'Lying down, arch the upper back, crown of the head rests lightly on the floor, chest opens.'},
+  {name:'Butterfly Pose', sanskrit:'Baddha Konasana', category:'Hip Opener', focus:'Inner thighs, hips', difficulty:'Beginner', hold:30, shape:'butterfly', seq:null, cue:'Soles of the feet together, knees release toward the floor, spine stays long.'},
+  {name:'Reclining Twist', sanskrit:'Supta Matsyendrasana', category:'Twist', focus:'Spine, lower back release', difficulty:'Beginner', hold:30, shape:'recliningTwist', seq:null, cue:'Lying down, knees drop to one side while shoulders stay grounded, gaze the opposite way.'},
+  {name:'Happy Baby', sanskrit:'Ananda Balasana', category:'Restorative', focus:'Hips, lower back release', difficulty:'Beginner', hold:30, shape:'happyBaby', seq:null, cue:'Lying down, grab the outer edges of the feet, knees draw toward the armpits.'},
+  {name:'Side Plank', sanskrit:'Vasisthasana', category:'Core', focus:'Obliques, shoulders', difficulty:'Intermediate', hold:20, shape:'sidePlank', seq:null, cue:'Stack the feet, lift the hips high, top arm reaches to the sky.'},
+  {name:'Corpse Pose', sanskrit:'Savasana', category:'Restorative', focus:'Full body integration', difficulty:'Beginner', hold:60, shape:'corpse', seq:13, cue:'Lie flat, palms up, let the whole body go heavy — this is where the practice absorbs.'},
+  {name:'Blowing in Firm Pose', sanskrit:'Kapalbhati Pranayama', category:'Restorative', focus:'Breath, final release', difficulty:'Beginner', hold:30, shape:'kneelLeanBack', seq:26, cue:'Kneeling, seated on the heels, forceful exhales through the nose to finish the practice.'},
+];
+
+/* ---------------- NAV ---------------- */
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('view-'+item.dataset.view).classList.add('active');
+    if(item.dataset.view==='today') renderToday();
+    if(item.dataset.view==='programs') renderPrograms();
+    if(item.dataset.view==='library') renderLibrary();
+    if(item.dataset.view==='progress') renderProgress();
+    if(item.dataset.view==='yoga') renderYoga();
+    if(item.dataset.view==='knowledge') renderKnowledge();
+  });
+});
+
+function exById(id){ return DB.exercises.find(e=>e.id===id); }
+function activeProgram(){ return DB.programs.find(p=>p.id===DB.activeProgramId); }
+
+/* ---------------- TODAY ---------------- */
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function renderToday(){
+  const prog = activeProgram();
+  const stripEl = document.getElementById('day-strip');
+  const cardEl = document.getElementById('today-card');
+  const titleEl = document.getElementById('today-title');
+  const descEl = document.getElementById('today-desc');
+
+  if(!prog){
+    stripEl.innerHTML='';
+    cardEl.innerHTML = '<div class="empty">No active program yet. Go to <b>Programs</b> to start one.</div>';
+    titleEl.textContent='Today';
+    descEl.textContent='Pick an active program to see your workout for today.';
+    return;
+  }
+
+  titleEl.textContent = prog.name;
+  descEl.textContent = prog.desc || '';
+
+  stripEl.innerHTML='';
+  prog.days.forEach((d,i)=>{
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (i===DB.activeDayIndex ? ' current':'');
+    pill.textContent = d.label;
+    pill.style.cursor='pointer';
+    pill.addEventListener('click', ()=>{ DB.activeDayIndex = i; saveDB(); renderToday(); });
+    stripEl.appendChild(pill);
+  });
+
+  const day = prog.days[DB.activeDayIndex];
+  if(!day || day.exercises.length===0){
+    cardEl.innerHTML = `<h3 style="color:var(--brass);margin-bottom:8px;">${day?day.focus:''}</h3><div class="empty">Rest day. Recovery is part of the plan — no exercises logged today.</div>`;
+    return;
+  }
+
+  const checkKey = `${prog.id}_${DB.activeDayIndex}_${todayKey()}`;
+  const checks = DB.checks[checkKey] || {};
+
+  let html = `<h3 style="color:var(--brass);margin-bottom:4px;">${day.focus}</h3>`;
+  day.exercises.forEach((pe,i)=>{
+    const ex = exById(pe.exId);
+    if(!ex) return;
+    const isChecked = checks[i];
+    html += `<div class="exercise-row">
+      <div class="check ${isChecked?'checked':''}" data-idx="${i}">${isChecked?'✓':''}</div>
+      <div class="ex-info">
+        <div class="name">${ex.name}</div>
+        <div class="meta">${ex.muscle} · ${pe.sets} sets × ${pe.reps} ${ex.note?('· '+ex.note):''}</div>
+      </div>
+    </div>`;
+  });
+  html += `<div style="margin-top:16px;"><button class="btn" id="finish-day-btn">Log Session Complete</button></div>`;
+  cardEl.innerHTML = html;
+
+  cardEl.querySelectorAll('.check').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      const idx = c.dataset.idx;
+      checks[idx] = !checks[idx];
+      DB.checks[checkKey] = checks;
+      saveDB();
+      renderToday();
+    });
+  });
+  document.getElementById('finish-day-btn').addEventListener('click', ()=>{
+    DB.logs.push({date: todayKey(), programId: prog.id, dayLabel: day.label, focus: day.focus, exCount: day.exercises.length});
+    saveDB();
+    alert('Session logged for '+day.label+'. Nice work.');
+    renderProgress();
+  });
+}
+
+/* ---------------- TIMER ---------------- */
+let timerState = {round:1, phase:'work', remaining:40, running:false, interval:null};
+function fmtTime(s){ const m=Math.floor(s/60); const sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+
+function updateTimerDisplay(){
+  const disp = document.getElementById('timer-display');
+  const label = document.getElementById('timer-phase-label');
+  disp.textContent = fmtTime(timerState.remaining);
+  disp.className = 'timer-display ' + (timerState.phase==='work'?'work':'rest');
+  const rounds = parseInt(document.getElementById('t-rounds').value)||1;
+  label.textContent = `${timerState.phase==='work'?'Work':'Rest'} — Round ${timerState.round}/${rounds}`;
+}
+
+function beep(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime+0.15);
+  }catch(e){}
+}
+
+document.getElementById('t-start').addEventListener('click', ()=>{
+  if(timerState.running) return;
+  if(timerState.remaining<=0 || timerState.phase==='idle'){
+    timerState.phase='work';
+    timerState.round=1;
+    timerState.remaining=parseInt(document.getElementById('t-work').value)||40;
+  }
+  timerState.running=true;
+  updateTimerDisplay();
+  timerState.interval = setInterval(()=>{
+    timerState.remaining--;
+    if(timerState.remaining<0){
+      beep();
+      const rounds = parseInt(document.getElementById('t-rounds').value)||1;
+      if(timerState.phase==='work'){
+        timerState.phase='rest';
+        timerState.remaining = parseInt(document.getElementById('t-rest').value)||20;
+      } else {
+        if(timerState.round>=rounds){
+          clearInterval(timerState.interval);
+          timerState.running=false;
+          document.getElementById('timer-phase-label').textContent='Complete';
+          document.getElementById('timer-display').textContent='DONE';
+          return;
+        }
+        timerState.round++;
+        timerState.phase='work';
+        timerState.remaining = parseInt(document.getElementById('t-work').value)||40;
+      }
+    }
+    updateTimerDisplay();
+  },1000);
+});
+document.getElementById('t-pause').addEventListener('click', ()=>{
+  clearInterval(timerState.interval);
+  timerState.running=false;
+});
+document.getElementById('t-reset').addEventListener('click', ()=>{
+  clearInterval(timerState.interval);
+  timerState.running=false;
+  timerState.round=1; timerState.phase='work';
+  timerState.remaining=parseInt(document.getElementById('t-work').value)||40;
+  updateTimerDisplay();
+});
+updateTimerDisplay();
+
+/* ---------------- PROGRAMS ---------------- */
+function renderPrograms(){
+  const list = document.getElementById('programs-list');
+  list.innerHTML='';
+  DB.programs.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'card prog-card' + (p.id===DB.activeProgramId?' active-program':'');
+    let daysHtml = p.days.map(d=>`<div class="day-block"><h3>${d.label} — ${d.focus}</h3><div class="day-ex-list">${
+      d.exercises.length ? d.exercises.map(pe=>{const ex=exById(pe.exId); return ex?`<div>${ex.name} — ${pe.sets}×${pe.reps}</div>`:'';}).join('') : '<div>Rest</div>'
+    }</div></div>`).join('');
+    div.innerHTML = `
+      <div class="row" style="justify-content:space-between;align-items:flex-start;">
+        <div>
+          <h2 style="font-size:18px;">${p.name}</h2>
+          <div class="desc" style="font-size:13px;color:var(--bone-dim);margin-top:4px;max-width:500px;">${p.desc||''}</div>
+        </div>
+        <div class="row">
+          ${p.id===DB.activeProgramId ? '<span class="tag" style="border-color:var(--brass);color:var(--brass);">ACTIVE</span>' : `<button class="btn small secondary" data-activate="${p.id}">Set Active</button>`}
+          <button class="btn small secondary" data-addday="${p.id}">+ Day</button>
+          <button class="btn small danger" data-delete="${p.id}">Delete</button>
+        </div>
+      </div>
+      <div style="margin-top:14px;">${daysHtml}</div>
+    `;
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll('[data-activate]').forEach(b=>b.addEventListener('click', ()=>{
+    DB.activeProgramId = b.dataset.activate; DB.activeDayIndex=0; saveDB(); renderPrograms();
+  }));
+  list.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click', ()=>{
+    if(!confirm('Delete this program?')) return;
+    DB.programs = DB.programs.filter(p=>p.id!==b.dataset.delete);
+    if(DB.activeProgramId===b.dataset.delete) DB.activeProgramId = DB.programs[0]?.id || null;
+    saveDB(); renderPrograms();
+  }));
+  list.querySelectorAll('[data-addday]').forEach(b=>b.addEventListener('click', ()=>{
+    openAddDayModal(b.dataset.addday);
+  }));
+}
+
+document.getElementById('new-program-btn').addEventListener('click', ()=>{
+  openModal(`
+    <span class="close-x" id="modal-close">&times;</span>
+    <h2>New Program</h2>
+    <div class="field"><label>Program Name</label><input type="text" id="np-name" placeholder="e.g. My Custom Split"></div>
+    <div class="field"><label>Description</label><textarea id="np-desc" rows="2" placeholder="What is this program for?"></textarea></div>
+    <button class="btn" id="np-save">Create</button>
+  `);
+  document.getElementById('np-save').addEventListener('click', ()=>{
+    const name = document.getElementById('np-name').value.trim();
+    if(!name){ alert('Give it a name.'); return; }
+    const p = {id:uid(), name, desc:document.getElementById('np-desc').value.trim(), days:[]};
+    DB.programs.push(p);
+    saveDB();
+    closeModal();
+    renderPrograms();
+  });
+});
+
+function openAddDayModal(progId){
+  const prog = DB.programs.find(p=>p.id===progId);
+  const exOptions = DB.exercises.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  openModal(`
+    <span class="close-x" id="modal-close">&times;</span>
+    <h2>Add Day to ${prog.name}</h2>
+    <div class="field"><label>Day Label</label><input type="text" id="ad-label" placeholder="e.g. Day ${prog.days.length+1}" value="Day ${prog.days.length+1}"></div>
+    <div class="field"><label>Focus</label><input type="text" id="ad-focus" placeholder="e.g. Lower Body Strength"></div>
+    <div class="field"><label>Exercises</label>
+      <select id="ad-exercise" multiple size="6">${exOptions}</select>
+      <div style="font-size:11px;color:var(--bone-dim);margin-top:4px;">Cmd/Ctrl-click to select multiple. Leave empty for a rest day.</div>
+    </div>
+    <button class="btn" id="ad-save">Add Day</button>
+  `);
+  document.getElementById('ad-save').addEventListener('click', ()=>{
+    const label = document.getElementById('ad-label').value.trim() || `Day ${prog.days.length+1}`;
+    const focus = document.getElementById('ad-focus').value.trim() || 'Rest';
+    const sel = Array.from(document.getElementById('ad-exercise').selectedOptions).map(o=>o.value);
+    const exercises = sel.map(id=>{ const e=exById(id); return {exId:id, sets:e.sets||3, reps:e.reps||10}; });
+    prog.days.push({label, focus, exercises});
+    saveDB();
+    closeModal();
+    renderPrograms();
+  });
+}
+
+/* ---------------- LIBRARY ---------------- */
+let libFilter = 'all';
+function renderLibrary(){
+  const filters = document.getElementById('lib-filters');
+  const cats = ['all','strength','cardio','mobility'];
+  filters.innerHTML = cats.map(c=>`<div class="filter-chip ${libFilter===c?'active':''}" data-cat="${c}">${c}</div>`).join('');
+  filters.querySelectorAll('.filter-chip').forEach(c=>c.addEventListener('click', ()=>{ libFilter=c.dataset.cat; renderLibrary(); }));
+
+  const list = document.getElementById('library-list');
+  const items = DB.exercises.filter(e=>libFilter==='all'||e.cat===libFilter);
+  list.innerHTML = items.map(e=>`
+    <div class="lib-item">
+      <div>
+        <div class="name">${e.name} <span class="tag ${e.cat}">${e.cat}</span></div>
+        <div class="meta">${e.muscle} · default ${e.sets}×${e.reps} ${e.note?('· '+e.note):''}</div>
+      </div>
+      <button class="btn small danger" data-del="${e.id}">Remove</button>
+    </div>
+  `).join('') || '<div class="empty">No exercises in this category.</div>';
+
+  list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    if(!confirm('Remove this exercise from the library?')) return;
+    DB.exercises = DB.exercises.filter(e=>e.id!==b.dataset.del);
+    saveDB(); renderLibrary();
+  }));
+}
+
+document.getElementById('new-exercise-btn').addEventListener('click', ()=>{
+  openModal(`
+    <span class="close-x" id="modal-close">&times;</span>
+    <h2>Add Exercise</h2>
+    <div class="field"><label>Name</label><input type="text" id="ne-name"></div>
+    <div class="grid2">
+      <div class="field"><label>Category</label>
+        <select id="ne-cat"><option value="strength">Strength</option><option value="cardio">Cardio</option><option value="mobility">Mobility</option></select>
+      </div>
+      <div class="field"><label>Muscle / Focus</label><input type="text" id="ne-muscle" placeholder="e.g. Legs"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Default Sets</label><input type="number" id="ne-sets" value="3"></div>
+      <div class="field"><label>Default Reps</label><input type="number" id="ne-reps" value="12"></div>
+    </div>
+    <div class="field"><label>Note (optional)</label><input type="text" id="ne-note"></div>
+    <button class="btn" id="ne-save">Add to Library</button>
+  `);
+  document.getElementById('ne-save').addEventListener('click', ()=>{
+    const name = document.getElementById('ne-name').value.trim();
+    if(!name){ alert('Name it first.'); return; }
+    DB.exercises.push({
+      id: uid(), name, cat: document.getElementById('ne-cat').value,
+      muscle: document.getElementById('ne-muscle').value.trim()||'General',
+      sets: parseInt(document.getElementById('ne-sets').value)||3,
+      reps: parseInt(document.getElementById('ne-reps').value)||12,
+      note: document.getElementById('ne-note').value.trim()
+    });
+    saveDB(); closeModal(); renderLibrary();
+  });
+});
+
+/* ---------------- PROGRESS ---------------- */
+function renderProgress(){
+  const logs = DB.logs;
+  document.getElementById('stat-total').textContent = logs.length;
+
+  const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate()-7);
+  const weekCount = logs.filter(l=>new Date(l.date) >= oneWeekAgo).length;
+  document.getElementById('stat-week').textContent = weekCount;
+
+  // streak: consecutive days with a log, counting back from today
+  const dateSet = new Set(logs.map(l=>l.date));
+  let streak=0; let d=new Date();
+  while(dateSet.has(d.toISOString().slice(0,10))){ streak++; d.setDate(d.getDate()-1); }
+  document.getElementById('stat-streak').textContent = streak;
+
+  const goalEl = document.getElementById('goal-display');
+  const g = DB.goal;
+  const pct = g.weeklyTarget ? Math.min(100, Math.round((weekCount/g.weeklyTarget)*100)) : 0;
+  goalEl.innerHTML = `
+    <div style="font-size:13px;color:var(--bone-dim);margin-bottom:8px;">
+      ${g.targetWeight ? `Target weight: <b style="color:var(--bone);">${g.targetWeight}kg</b> · ` : ''}
+      Weekly target: <b style="color:var(--bone);">${g.weeklyTarget} sessions</b>
+      ${g.notes ? `<div style="margin-top:6px;">${g.notes}</div>` : ''}
+    </div>
+    <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%;"></div></div>
+    <div style="font-size:11px;color:var(--bone-dim);margin-top:4px;">${weekCount}/${g.weeklyTarget} sessions this week</div>
+  `;
+
+  const histEl = document.getElementById('history-list');
+  if(logs.length===0){ histEl.innerHTML = '<div class="empty">No sessions logged yet.</div>'; }
+  else {
+    histEl.innerHTML = logs.slice().reverse().slice(0,30).map(l=>`
+      <div class="exercise-row">
+        <div class="ex-info">
+          <div class="name">${l.dayLabel} — ${l.focus}</div>
+          <div class="meta">${l.date} · ${l.exCount} exercises</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+document.getElementById('edit-goal-btn').addEventListener('click', ()=>{
+  const g = DB.goal;
+  openModal(`
+    <span class="close-x" id="modal-close">&times;</span>
+    <h2>Edit Goal</h2>
+    <div class="field"><label>Target Weight (kg, optional)</label><input type="number" id="g-weight" value="${g.targetWeight}"></div>
+    <div class="field"><label>Weekly Session Target</label><input type="number" id="g-weekly" value="${g.weeklyTarget}"></div>
+    <div class="field"><label>Notes</label><textarea id="g-notes" rows="3">${g.notes}</textarea></div>
+    <button class="btn" id="g-save">Save Goal</button>
+  `);
+  document.getElementById('g-save').addEventListener('click', ()=>{
+    DB.goal.targetWeight = document.getElementById('g-weight').value;
+    DB.goal.weeklyTarget = parseInt(document.getElementById('g-weekly').value)||5;
+    DB.goal.notes = document.getElementById('g-notes').value.trim();
+    saveDB(); closeModal(); renderProgress();
+  });
+});
+
+/* ---------------- KNOWLEDGE ---------------- */
+function renderKnowledge(){
+  const el = document.getElementById('my-notes');
+  if(DB.myNotes.length===0){ el.innerHTML = '<div class="empty">No personal notes yet.</div>'; return; }
+  el.innerHTML = DB.myNotes.map((n,i)=>`
+    <div class="note-block">
+      <div class="row" style="justify-content:space-between;">
+        <h3 style="font-size:14px;">${n.title||'Note'}</h3>
+        <button class="btn small danger" data-delnote="${i}">Remove</button>
+      </div>
+      <p>${n.body}</p>
+    </div>
+  `).join('');
+  el.querySelectorAll('[data-delnote]').forEach(b=>b.addEventListener('click', ()=>{
+    DB.myNotes.splice(parseInt(b.dataset.delnote),1);
+    saveDB(); renderKnowledge();
+  }));
+}
+document.getElementById('add-note-btn').addEventListener('click', ()=>{
+  openModal(`
+    <span class="close-x" id="modal-close">&times;</span>
+    <h2>Add Note</h2>
+    <div class="field"><label>Title</label><input type="text" id="mn-title"></div>
+    <div class="field"><label>Note</label><textarea id="mn-body" rows="4"></textarea></div>
+    <button class="btn" id="mn-save">Save Note</button>
+  `);
+  document.getElementById('mn-save').addEventListener('click', ()=>{
+    const body = document.getElementById('mn-body').value.trim();
+    if(!body) return;
+    DB.myNotes.push({title:document.getElementById('mn-title').value.trim(), body});
+    saveDB(); closeModal(); renderKnowledge();
+  });
+});
+
+/* ---------------- YOGA ---------------- */
+let yogaFilter = 'all';
+
+function renderYoga(){
+  document.getElementById('yoga-browse').style.display = 'block';
+  document.getElementById('yoga-sequence').style.display = 'none';
+
+  const cats = ['all','Standing','Balance','Backbend','Forward Fold','Twist','Hip Opener','Core','Restorative'];
+  const filtersEl = document.getElementById('yoga-filters');
+  filtersEl.innerHTML = cats.map(c=>`<div class="filter-chip ${yogaFilter===c?'active':''}" data-cat="${c}">${c==='all'?'All':c}</div>`).join('');
+  filtersEl.querySelectorAll('.filter-chip').forEach(c=>c.addEventListener('click', ()=>{ yogaFilter=c.dataset.cat; renderYoga(); }));
+
+  const grid = document.getElementById('pose-grid');
+  const items = POSES.filter(p=>yogaFilter==='all'||p.category===yogaFilter);
+  grid.innerHTML = items.map((p,i)=>`
+    <div class="pose-card" data-idx="${POSES.indexOf(p)}">
+      ${p.seq ? `<div class="seq-num">#${p.seq}</div>` : ''}
+      <svg viewBox="0 0 90 90">${SHAPES[p.shape]}</svg>
+      <div class="pname">${p.name}</div>
+      <div class="psans">${p.sanskrit}</div>
+      <div class="pfocus">${p.focus}</div>
+      <div class="pmeta-row">
+        <span class="tag">${p.category}</span>
+        <span class="diff-tag ${p.difficulty.toLowerCase()}">${p.difficulty}</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty">No poses in this category.</div>';
+
+  grid.querySelectorAll('.pose-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const p = POSES[card.dataset.idx];
+      openModal(`
+        <span class="close-x" id="modal-close">&times;</span>
+        <div style="text-align:center;">
+          <svg viewBox="0 0 90 90" style="width:120px;height:120px;">${SHAPES[p.shape]}</svg>
+        </div>
+        <h2 style="margin-top:10px;">${p.name}</h2>
+        <div style="color:var(--brass);font-style:italic;font-size:13px;margin-bottom:10px;">${p.sanskrit}</div>
+        <div class="pmeta-row" style="justify-content:flex-start;margin-bottom:12px;">
+          <span class="tag">${p.category}</span>
+          <span class="diff-tag ${p.difficulty.toLowerCase()}">${p.difficulty}</span>
+          <span class="tag mono">~${p.hold}s hold</span>
+        </div>
+        <p style="font-size:13px;color:var(--bone-dim);line-height:1.7;">${p.cue}</p>
+        <p style="font-size:12px;color:var(--bone-dim);margin-top:8px;"><b style="color:var(--bone);">Focus:</b> ${p.focus}</p>
+      `);
+    });
+  });
+}
+
+/* ---------------- GUIDED SEQUENCE (26-posture hot yoga flow) ---------------- */
+const SEQUENCE = POSES.filter(p=>p.seq).sort((a,b)=>a.seq-b.seq);
+let seqState = {i:0, remaining:0, running:false, interval:null};
+
+document.getElementById('start-sequence-btn').addEventListener('click', startSequence);
+document.getElementById('seq-exit').addEventListener('click', ()=>{
+  clearInterval(seqState.interval);
+  seqState.running=false;
+  speechSynthesis.cancel();
+  renderYoga();
+});
+document.getElementById('seq-next').addEventListener('click', ()=>{ goToPose(seqState.i+1); });
+document.getElementById('seq-prev').addEventListener('click', ()=>{ goToPose(seqState.i-1); });
+document.getElementById('seq-pause').addEventListener('click', ()=>{
+  seqState.running = !seqState.running;
+  document.getElementById('seq-pause').textContent = seqState.running ? 'Pause' : 'Resume';
+  if(seqState.running) runSeqTimer(); else { clearInterval(seqState.interval); speechSynthesis.cancel(); }
+});
+
+/* Voice coach (Web Speech API) */
+function speak(text){
+  if(!document.getElementById('voice-coach-toggle').checked) return;
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95;
+  u.pitch = 1;
+  speechSynthesis.speak(u);
+}
+
+/* YouTube video embed */
+function extractYoutubeId(url){
+  if(!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+  ];
+  for(const p of patterns){ const m = url.match(p); if(m) return m[1]; }
+  return null;
+}
+function renderVideoEmbed(){
+  const wrap = document.getElementById('video-embed-wrap');
+  document.getElementById('video-url-input').value = DB.videoUrl || '';
+  const id = extractYoutubeId(DB.videoUrl);
+  if(id){
+    wrap.innerHTML = `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${id}" title="Instructor video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  } else {
+    wrap.innerHTML = DB.videoUrl ? '<div class="empty">Could not read that link — paste a standard YouTube URL.</div>' : '';
+  }
+}
+document.getElementById('video-save-btn').addEventListener('click', ()=>{
+  DB.videoUrl = document.getElementById('video-url-input').value.trim();
+  saveDB();
+  renderVideoEmbed();
+});
+document.getElementById('video-clear-btn').addEventListener('click', ()=>{
+  DB.videoUrl = '';
+  saveDB();
+  renderVideoEmbed();
+});
+
+function startSequence(){
+  document.getElementById('yoga-browse').style.display = 'none';
+  document.getElementById('yoga-sequence').style.display = 'block';
+  renderVideoEmbed();
+  goToPose(0);
+}
+
+function goToPose(idx){
+  clearInterval(seqState.interval);
+  speechSynthesis.cancel();
+  if(idx < 0) idx = 0;
+  if(idx >= SEQUENCE.length){
+    document.getElementById('seq-name').textContent = 'Flow Complete';
+    document.getElementById('seq-sans').textContent = '';
+    document.getElementById('seq-cue').textContent = "Nice work — that's the full 26-posture flow. Rest in Savasana as long as you like.";
+    document.getElementById('seq-timer').textContent = '';
+    document.getElementById('seq-svg').innerHTML = SHAPES.corpse;
+    document.getElementById('seq-progress').textContent = `Done — ${SEQUENCE.length}/${SEQUENCE.length}`;
+    document.getElementById('seq-bar-fill').style.width = '100%';
+    speak("That's the full flow. Rest here in Savasana for as long as you like.");
+    return;
+  }
+  seqState.i = idx;
+  const p = SEQUENCE[idx];
+  seqState.remaining = p.hold;
+  seqState.running = true;
+  document.getElementById('seq-pause').textContent = 'Pause';
+  document.getElementById('seq-svg').innerHTML = SHAPES[p.shape];
+  document.getElementById('seq-name').textContent = p.name;
+  document.getElementById('seq-sans').textContent = p.sanskrit;
+  document.getElementById('seq-cue').textContent = p.cue;
+  document.getElementById('seq-progress').textContent = `Posture ${idx+1}/${SEQUENCE.length}`;
+  document.getElementById('seq-bar-fill').style.width = `${Math.round((idx/SEQUENCE.length)*100)}%`;
+  document.getElementById('seq-timer').textContent = seqState.remaining;
+  speak(`${p.name}. ${p.cue}`);
+  runSeqTimer();
+}
+
+function runSeqTimer(){
+  clearInterval(seqState.interval);
+  seqState.interval = setInterval(()=>{
+    seqState.remaining--;
+    document.getElementById('seq-timer').textContent = Math.max(0,seqState.remaining);
+    if(seqState.remaining === 3 && document.getElementById('voice-coach-toggle').checked){
+      const u = new SpeechSynthesisUtterance('almost there');
+      u.rate = 1; speechSynthesis.speak(u);
+    }
+    if(seqState.remaining <= 0){
+      beep();
+      goToPose(seqState.i+1);
+    }
+  }, 1000);
+}
+
+/* ---------------- MODAL ---------------- */
+function openModal(html){
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+document.getElementById('modal-bg').addEventListener('click', (e)=>{ if(e.target.id==='modal-bg') closeModal(); });
+
+/* ---------------- INIT ---------------- */
+renderToday();
+</script>
+</body>
+</html>

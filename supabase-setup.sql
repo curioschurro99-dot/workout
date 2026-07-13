@@ -1,4 +1,4 @@
--- FieldNotes (workout app) tables
+-- Workout app tables
 -- Run this in the same Supabase project as phtracker (pqvheypxqjufdspkvzpk.supabase.co)
 -- All tables use `workout_` prefix to avoid conflicts with phtracker's `habit_` tables.
 

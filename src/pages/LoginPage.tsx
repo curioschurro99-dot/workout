@@ -21,7 +21,9 @@ export default function LoginPage({ onSwitch }: { onSwitch: () => void }) {
       <h2 className="text-lg font-['Oswald'] text-bone mb-4">Sign In</h2>
       {error && <div className="text-sm text-danger mb-3">{error}</div>}
       <div className="mb-3">
-        <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">Email</label>
+        <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">
+          Email
+        </label>
         <input
           type="email"
           value={email}
@@ -31,7 +33,9 @@ export default function LoginPage({ onSwitch }: { onSwitch: () => void }) {
         />
       </div>
       <div className="mb-4">
-        <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">Password</label>
+        <label className="text-[11px] uppercase tracking-[0.05em] text-bone-dim block mb-1.5">
+          Password
+        </label>
         <input
           type="password"
           value={password}

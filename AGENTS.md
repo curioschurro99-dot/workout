@@ -1,15 +1,15 @@
-# Project: fieldnotes
+# Project: workout
 
 ## Stack
 
-| Layer     | Technology                                        |
-| --------- | ------------------------------------------------- |
-| Framework | React 18                                          |
-| Build     | Vite 6 + `@vitejs/plugin-react`                   |
-| Styling   | Tailwind CSS 4 via `@import "tailwindcss"`        |
-| Icons     | Lucide React                                      |
-| State     | localStorage + Supabase-backed per user           |
-| Language  | TypeScript (strict mode)                          |
+| Layer     | Technology                                 |
+| --------- | ------------------------------------------ |
+| Framework | React 18                                   |
+| Build     | Vite 6 + `@vitejs/plugin-react`            |
+| Styling   | Tailwind CSS 4 via `@import "tailwindcss"` |
+| Icons     | Lucide React                               |
+| State     | localStorage + Supabase-backed per user    |
+| Language  | TypeScript (strict mode)                   |
 
 ## Workflow
 
@@ -109,14 +109,14 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 
 ## Dev commands
 
-| Command           | What it does              |
-| ----------------- | ------------------------- |
-| `npm run dev`     | Start dev server with HMR |
-| `npm run build`   | Production build          |
-| `npm run preview` | Preview production build  |
-| `npm run lint`    | ESLint across the project |
-| `npm run format`  | Prettier formatting       |
-| `npm run typecheck` | TypeScript type checking |
+| Command             | What it does              |
+| ------------------- | ------------------------- |
+| `npm run dev`       | Start dev server with HMR |
+| `npm run build`     | Production build          |
+| `npm run preview`   | Preview production build  |
+| `npm run lint`      | ESLint across the project |
+| `npm run format`    | Prettier formatting       |
+| `npm run typecheck` | TypeScript type checking  |
 
 ## Code conventions
 
@@ -140,4 +140,3 @@ scripts/auto-commit.ps1 "chore: update dependencies"
 - **Strict TS catches unused imports**: `noUnusedLocals` and `noUnusedParameters` will catch unused destructured props from function signatures. Prefix with underscore (`_unused`) to suppress.
 - **`.gitignore` must exclude generated `.js` files**: Running `tsc` without `--noEmit` in the same directory as `.tsx` files will emit `.js` files. Always add `src/**/*.js` and `src/**/*.js.map` to `.gitignore`.
 - **Supabase project sharing**: Using the same Supabase project for multiple apps works fine as long as table names are prefixed (`workout_*` vs phtracker's implicit naming). Auth is shared across apps.
-
